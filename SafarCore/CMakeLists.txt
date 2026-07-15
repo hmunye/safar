@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_CXX_EXTENSIONS        OFF)
 
 add_subdirectory("src")
-# add_subdirectory("vendor/whisper.cpp")
+add_subdirectory("vendor/whisper.cpp")
 
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE safar::libsafar)
