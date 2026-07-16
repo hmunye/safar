@@ -10,6 +10,11 @@ fi
 
 if ! command -v git-lfs >/dev/null 2>&1; then
     printf "\033[0;31merror: git-lfs is required\033[0m\n" 1>&2
+    printf "Git LFS manages large files associated with Git repositories.\n" 1>&2
+    printf "Install it with a package manager (e.g., Homebrew):\n" 1>&2
+    printf "\n" 1>&2
+    printf "  brew install git-lfs\n" 1>&2
+    printf "  git lfs install\n" 1>&2
     exit 1
 fi
 
