@@ -85,14 +85,25 @@ encoder_added = json.load((dir_model / "added_tokens.json").open( "r", encoding=
 hparams = json.load((dir_model / "config.json").open("r", encoding="utf8"))
 
 # Add this block to handle missing 'max_length'
-if "max_length" not in hparams or hparams["max_length"] is None:
-    hparams["max_length"] = hparams.get("max_target_positions", 448)  # Default to 448 if missing
-elif not isinstance(hparams["max_length"], int):
-    try:
-        hparams["max_length"] = int(hparams["max_length"])  # Convert if necessary
-    except ValueError:
-        print(f"Warning: Invalid max_length value '{hparams['max_length']}', using default 448.")
-        hparams["max_length"] = 448
+# if "max_length" not in hparams or hparams["max_length"] is None:
+#     hparams["max_length"] = hparams.get("max_target_positions", 448)  # Default to 448 if missing
+# elif not isinstance(hparams["max_length"], int):
+#     try:
+#         hparams["max_length"] = int(hparams["max_length"])  # Convert if necessary
+#     except ValueError:
+#         print(f"Warning: Invalid max_length value '{hparams['max_length']}', using default 448.")
+#         hparams["max_length"] = 448
+
+# Fixes:
+#
+#   whisper_model_load: tensor 'decoder.positional_embedding' has wrong size in
+#   model file
+#   whisper_model_load: shape: [512, 448, 1], expected: [512, 1024, 1]
+#
+# `tarteel-ai/whisper-base-ar-quran` uses 'max_target_positions' instead of
+# 'max_length'.
+if "max_target_positions" in hparams:
+    hparams["max_length"] = hparams["max_target_positions"]
         
 model = WhisperForConditionalGeneration.from_pretrained(dir_model)
 
