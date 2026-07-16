@@ -21,3 +21,7 @@ To prepare the model, run:
 This project is licensed under the [MIT License].
 
 [MIT License]: https://github.com/hmunye/safar/blob/main/LICENSE
+
+## References
+
+- [Tanzil](https://tanzil.net/docs/)
