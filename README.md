@@ -8,9 +8,9 @@ processing to identify verse ranges from audio, played back in a scrollable feed
 ### Model
 
 This project uses [`tarteel-ai/whisper-base-ar-quran`](https://huggingface.co/tarteel-ai/whisper-base-ar-quran),
-converted for use with `whisper.cpp`.
+converted for use with [`ggml-org/whisper.cpp`](https://github.com/ggml-org/whisper.cpp).
 
-To download and prepare the model:
+To prepare the model, run:
 
 ```bash
 ./prepare_model.sh
@@ -21,7 +21,3 @@ To download and prepare the model:
 This project is licensed under the [MIT License].
 
 [MIT License]: https://github.com/hmunye/safar/blob/main/LICENSE
-
-## References
-
-- [ggml-org/whisper.cpp](https://github.com/ggml-org/whisper.cpp)
