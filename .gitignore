@@ -12,3 +12,6 @@ DerivedData/
 *.dSYM
 *.dSYM.zip
 *.xcarchive
+
+tmp/
+Safar/Resources/Models/*

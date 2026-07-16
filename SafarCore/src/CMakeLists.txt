@@ -1,29 +1,27 @@
 add_library(libsafar STATIC libsafar.cpp)
 add_library(safar::libsafar ALIAS libsafar)
 
-# Set library output name to `libsafar.a` (defaults to `liblibsafar.a`).
-set_target_properties(
-    libsafar
-    PROPERTIES OUTPUT_NAME safar
+# Produce libsafar.a instead of liblibsafar.a.
+set_target_properties(libsafar PROPERTIES
+    OUTPUT_NAME safar
 )
 
+target_compile_features(libsafar PUBLIC cxx_std_20)
 target_compile_options(libsafar PUBLIC
     -Wall 
     -Wextra 
     -Werror 
     -Wpedantic
-    $<$<CONFIG:RELEASE>:-O3>
-    $<$<CONFIG:DEBUG>:-ggdb>
 )
 
 target_include_directories(libsafar
-    # PUBLIC: Targets that compile against `libsafar` will inherit the generated
-    # include paths.
     PUBLIC
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-    # PRIVATE: Targets that compile against `libsafar` will not depend on the
-    # local `include/` directory.
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     PRIVATE
-        ${CMAKE_SOURCE_DIR}/src/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+target_link_libraries(libsafar
+    PRIVATE
+        whisper
 )

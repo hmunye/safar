@@ -1,0 +1,5 @@
+whisper.cpp
+
+Branch: master
+Commit: 8ee185a20ec17eae0fdb37a3b39052e75a920bfd
+Source: https://github.com/ggml-org/whisper.cpp
