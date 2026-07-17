@@ -18,9 +18,14 @@ bool parse_line(const std::string& line, int line_number, VerseEntry& out) {
     }
 
     std::size_t pipe_1 = line.find('|');
-    std::size_t pipe_2 = line.find('|', pipe_1 + 1);
+    if (pipe_1 == std::string::npos) {
+        std::cerr << "error: malformed line " << line_number << ": " << line
+                  << "\n";
+        std::exit(1);
+    }
 
-    if (pipe_1 == std::string::npos || pipe_2 == std::string::npos) {
+    std::size_t pipe_2 = line.find('|', pipe_1 + 1);
+    if (pipe_2 == std::string::npos) {
         std::cerr << "error: malformed line " << line_number << ": " << line
                   << "\n";
         std::exit(1);
@@ -93,7 +98,7 @@ int main(int argc, char* argv[]) {
     header << "};\n\n";
     header << "extern const VerseEntry quran_corpus[];\n";
     header << "extern const std::size_t quran_corpus_size;\n\n";
-    header << "} // namespace safar";
+    header << "}  // namespace safar";
 
     header.close();
 
@@ -117,7 +122,7 @@ int main(int argc, char* argv[]) {
     source << "};\n\n";
     source
         << "const std::size_t quran_corpus_size = std::size(quran_corpus);\n\n";
-    source << "} // namespace safar";
+    source << "}  // namespace safar";
 
     source.close();
 

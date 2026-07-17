@@ -1,4 +1,6 @@
-#include <libsafar/libsafar.hpp>
+// #include "corpus.hpp"
+#include "libsafar/libsafar.hpp"
+
 #include <whisper.h>
 
 #include <algorithm>
@@ -65,7 +67,7 @@ Transcriber::Transcriber(const std::string& model_path)
     impl_->ctx =
         whisper_init_from_file_with_params(model_path.c_str(), cparams);
     if (!impl_->ctx) {
-        throw safar::Error("failed to load ASR model");
+        throw Error("failed to load model");
     }
 
     impl_->wparams.translate = false;
@@ -79,12 +81,12 @@ Transcriber::~Transcriber() = default;
 Transcriber::Transcriber(Transcriber&&) noexcept = default;
 Transcriber& Transcriber::operator=(Transcriber&&) noexcept = default;
 
-safar::Transcript Transcriber::transcribe(const std::string& audio_path) {
+Transcript Transcriber::transcribe(const std::string& audio_path) {
     std::vector<float> pcmf32 = load_wav(audio_path);
 
     if (whisper_full(impl_->ctx, impl_->wparams, pcmf32.data(),
                      static_cast<int>(pcmf32.size())) != 0) {
-        throw safar::Error("failed to run model");
+        throw Error("failed to run model");
     }
 
     const int n_segments = whisper_full_n_segments(impl_->ctx);
