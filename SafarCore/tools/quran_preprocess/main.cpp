@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
 
     std::vector<VerseEntry> entries = read_input(input_path);
 
-    std::ofstream header(output_dir + "/include/corpus.hpp");
+    std::ofstream header(output_dir + "/corpus.hpp");
     if (!header.is_open()) {
         std::cerr << "error: failed to write header file: " << "\n";
         return 1;

@@ -1,6 +1,2 @@
 *.cache/
 build/
-
-# Generated
-src/corpus.cpp
-src/include/corpus.hpp

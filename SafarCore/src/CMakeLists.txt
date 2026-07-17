@@ -9,7 +9,7 @@ set_target_properties(libsafar PROPERTIES
 add_dependencies(libsafar generate_corpus)
 target_sources(libsafar
     PRIVATE
-        corpus.cpp
+        ${CMAKE_BINARY_DIR}/generated/corpus.cpp
 )
 
 target_compile_features(libsafar PUBLIC cxx_std_20)
@@ -25,6 +25,7 @@ target_include_directories(libsafar
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_BINARY_DIR}/generated
 )
 
 target_link_libraries(libsafar
