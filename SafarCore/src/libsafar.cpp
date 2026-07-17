@@ -1,9 +1,8 @@
 #include <libsafar/libsafar.hpp>
-
-#include <fstream>
-#include <algorithm>
-
 #include <whisper.h>
+
+#include <algorithm>
+#include <fstream>
 
 namespace {
 
@@ -85,7 +84,7 @@ safar::Transcript Transcriber::transcribe(const std::string& audio_path) {
 
     if (whisper_full(impl_->ctx, impl_->wparams, pcmf32.data(),
                      static_cast<int>(pcmf32.size())) != 0) {
-        throw safar::Error("failed to run ASR model");
+        throw safar::Error("failed to run model");
     }
 
     const int n_segments = whisper_full_n_segments(impl_->ctx);

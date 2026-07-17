@@ -6,6 +6,12 @@ set_target_properties(libsafar PROPERTIES
     OUTPUT_NAME safar
 )
 
+add_dependencies(libsafar generate_corpus)
+target_sources(libsafar
+    PRIVATE
+        corpus.cpp
+)
+
 target_compile_features(libsafar PUBLIC cxx_std_20)
 target_compile_options(libsafar PUBLIC
     -Wall 
