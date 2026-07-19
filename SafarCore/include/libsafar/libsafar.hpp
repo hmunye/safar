@@ -7,37 +7,40 @@
 
 namespace safar {
 
-class Error : public std::runtime_error {
+// Exception thrown when the identification pipeline fails.
+class IdentifierError : public std::runtime_error {
    public:
     using std::runtime_error::runtime_error;
 };
 
-// Single segment of recognized text and associated metadata.
-struct Segment {
+// Verse identified from a recitation audio clip and associated metadata.
+struct VerseMatch {
     std::string text;
 };
 
-// Recognized text produced from a recitation audio input.
-struct Transcript {
-    std::vector<Segment> segments;
-};
-
-// Transcribes recitation audio into text segments.
-class Transcriber {
+// Identifies Quran verses contained in a recitation audio clip.
+class RecitationIdentifier {
     struct Impl;
     std::unique_ptr<Impl> impl_;
 
    public:
-    explicit Transcriber(const std::string& model_path);
-    ~Transcriber();
+    // Prepares the identification pipeline using the given ASR model.
+    //
+    // Throws `safar::IdentifierError` if the model cannot be loaded.
+    explicit RecitationIdentifier(const std::string& model_path);
+    ~RecitationIdentifier();
 
-    Transcriber(Transcriber&&) noexcept;
-    Transcriber& operator=(Transcriber&&) noexcept;
+    RecitationIdentifier(RecitationIdentifier&&) noexcept;
+    RecitationIdentifier& operator=(RecitationIdentifier&&) noexcept;
 
-    Transcriber(const Transcriber&) = delete;
-    Transcriber& operator=(const Transcriber&) = delete;
+    RecitationIdentifier(const RecitationIdentifier&) = delete;
+    RecitationIdentifier& operator=(const RecitationIdentifier&) = delete;
 
-    Transcript transcribe(const std::string& audio_path);
+    // Identifies verses contained in the provided recitation audio clip.
+    //
+    // Throws `safar::IdentifierError` if processing fails.
+    [[nodiscard]] std::vector<VerseMatch> identify_verses(
+        const std::string& audio_path);
 };
 
 }  // namespace safar

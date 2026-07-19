@@ -1,5 +1,11 @@
-add_executable(quran_preprocess
-    quran_preprocess/main.cpp
+add_executable(preprocess_corpus
+    preprocess_corpus/main.cpp
+    ${CMAKE_SOURCE_DIR}/src/normalize.cpp
+)
+
+target_include_directories(preprocess_corpus
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/include
 )
 
 set(GENERATED_HEADER ${CMAKE_BINARY_DIR}/generated/corpus.hpp)
@@ -14,11 +20,11 @@ add_custom_command(
         ${CMAKE_COMMAND} -E make_directory
         ${CMAKE_BINARY_DIR}/generated
     COMMAND
-        $<TARGET_FILE:quran_preprocess>
+        $<TARGET_FILE:preprocess_corpus>
         ${CORPUS_INPUT}
         ${CMAKE_BINARY_DIR}/generated
     DEPENDS
-        quran_preprocess
+        preprocess_corpus
         ${CORPUS_INPUT}
     COMMENT "Generating corpus files from quran-uthmani.txt"
     VERBATIM

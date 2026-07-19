@@ -1,4 +1,8 @@
-add_library(libsafar STATIC libsafar.cpp)
+add_library(libsafar STATIC
+    libsafar.cpp
+    model.cpp
+    normalize.cpp
+)
 add_library(safar::libsafar ALIAS libsafar)
 
 # Produce libsafar.a instead of liblibsafar.a.

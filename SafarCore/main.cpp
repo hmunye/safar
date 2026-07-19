@@ -1,6 +1,7 @@
 #include "libsafar/libsafar.hpp"
 
 #include <iostream>
+#include <string>
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
@@ -8,22 +9,21 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    const std::string model_path = argv[1];
-    const std::string audio_path = argv[2];
+    const std::string model_path{ argv[1] };
+    const std::string audio_path{ argv[2] };
 
     try {
-        safar::Transcriber t{ model_path };
-        safar::Transcript ts = t.transcribe(audio_path);
+        safar::RecitationIdentifier ri{ model_path };
 
-        std::cout << "\n";
+        auto verses = ri.identify_verses(audio_path);
 
-        for (const auto& seg : ts.segments) {
-            std::cout << seg.text;
+        for (const auto& v : verses) {
+            std::cout << v.text;
         }
-
-        std::cout << "\n";
-    } catch (const safar::Error& e) {
-        std::cerr << e.what() << std::endl;
-        return -1;
+    } catch (const safar::IdentifierError& e) {
+        std::cerr << e.what() << "\n";
+        return 1;
     }
+
+    std::cout << "\n";
 }

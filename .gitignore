@@ -1,17 +1,14 @@
-# Xcode
 **/*.xcodeproj/xcuserdata/
 **/*.xcworkspace/xcuserdata/
 *.xcuserstate
 DerivedData/
 
-# Swift Package Manager
 .build/
 
-# Build Artifacts
 *.ipa
 *.dSYM
 *.dSYM.zip
 *.xcarchive
 
-tmp/
 Safar/Resources/Models/*
+!Safar/Resources/Models/.gitignore
