@@ -1,4 +1,5 @@
 #include "libsafar/libsafar.hpp"
+#include "match.hpp"
 #include "model.hpp"
 
 #include <memory>
@@ -27,12 +28,9 @@ RecitationIdentifier& RecitationIdentifier::operator=(
 
 std::vector<VerseMatch> RecitationIdentifier::identify_verses(
     const std::string& audio_path) {
-    auto transcript = impl_->model.transcribe(audio_path);
+    const auto transcript = impl_->model.transcribe(audio_path);
 
-    std::vector<VerseMatch> verses;
-    verses.push_back({ transcript });
-
-    return verses;
+    return match_transcription(transcript);
 }
 
 }  // namespace safar

@@ -15,10 +15,11 @@ int main(int argc, char* argv[]) {
     try {
         safar::RecitationIdentifier ri{ model_path };
 
-        auto verses = ri.identify_verses(audio_path);
+        const auto verses = ri.identify_verses(audio_path);
 
         for (const auto& v : verses) {
-            std::cout << v.text;
+            std::cout << "match " << v.surah << ":" << v.ayah
+                      << " - matched text: " << v.text << "\n";
         }
     } catch (const safar::IdentifierError& e) {
         std::cerr << e.what() << "\n";

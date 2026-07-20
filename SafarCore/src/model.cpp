@@ -1,8 +1,8 @@
 #include "libsafar/libsafar.hpp"
 #include "model.hpp"
 
-#include <cstdint>
 #include <algorithm>
+#include <cstdint>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -102,7 +102,7 @@ std::string Model::transcribe(const std::string& audio_path) {
         throw IdentifierError("failed to run model");
     }
 
-    const int n_segments{ whisper_full_n_segments(ctx) };
+    const auto n_segments{ whisper_full_n_segments(ctx) };
 
     std::string transcript;
     for (int i{ 0 }; i < n_segments; ++i) {

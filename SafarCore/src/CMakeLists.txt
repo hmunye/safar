@@ -2,6 +2,7 @@ add_library(libsafar STATIC
     libsafar.cpp
     model.cpp
     normalize.cpp
+    match.cpp
 )
 add_library(safar::libsafar ALIAS libsafar)
 

@@ -1,8 +1,10 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace safar {
@@ -15,10 +17,12 @@ class IdentifierError : public std::runtime_error {
 
 // Verse identified from a recitation audio clip and associated metadata.
 struct VerseMatch {
-    std::string text;
+    std::uint16_t surah;
+    std::uint16_t ayah;
+    std::string_view text;
 };
 
-// Identifies Quran verses contained in a recitation audio clip.
+// Identifies Quran verses recited in an audio clip.
 class RecitationIdentifier {
     struct Impl;
     std::unique_ptr<Impl> impl_;
@@ -36,7 +40,7 @@ class RecitationIdentifier {
     RecitationIdentifier(const RecitationIdentifier&) = delete;
     RecitationIdentifier& operator=(const RecitationIdentifier&) = delete;
 
-    // Identifies verses contained in the provided recitation audio clip.
+    // Identifies verses recited in an audio clip.
     //
     // Throws `safar::IdentifierError` if processing fails.
     [[nodiscard]] std::vector<VerseMatch> identify_verses(

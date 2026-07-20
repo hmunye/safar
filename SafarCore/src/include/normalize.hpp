@@ -1,12 +1,12 @@
 #pragma once
 
 #include <string>
-#include <string_view>
 
 namespace safar {
 
-// Returns a normalized form of UTF-8 encoded Arabic text with collapsed
-// whitespace and removed diacritics, tatweel, and Quranic marks.
-[[nodiscard]] std::string normalize_text(std::string_view input);
+// Returns a normalized form of UTF-8 encoded Arabic text, removing
+// non-essential pronunciation and annotation marks while preserving
+// the underlying Arabic text.
+[[nodiscard]] std::string normalize_text(const std::string& input);
 
 }  // namespace safar

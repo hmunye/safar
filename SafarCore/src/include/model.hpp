@@ -11,8 +11,8 @@ class Model {
     whisper_full_params wparams;
 
    public:
-    // Initializes the Whisper context and parameters with the provided ASR
-    // model.
+    // Initializes the Whisper context and transcription parameters using the
+    // provided ASR model.
     //
     // Throws `safar::IdentifierError` if the model cannot be loaded.
     explicit Model(const std::string& model_path);
@@ -24,7 +24,7 @@ class Model {
     Model(const Model&) = delete;
     Model& operator=(const Model&) = delete;
 
-    // Transcribes the provided recitation audio clip.
+    // Transcribes a recitation audio clip into a single concatenated string.
     //
     // Throws `safar::IdentifierError` if transcription fails.
     [[nodiscard]] std::string transcribe(const std::string& audio_path);

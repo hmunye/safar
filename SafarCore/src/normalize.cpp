@@ -1,7 +1,7 @@
 #include "normalize.hpp"
 
+#include <optional>
 #include <string>
-#include <string_view>
 
 namespace {
 
@@ -21,8 +21,8 @@ namespace {
 // rather than the start of a new one. The remaining bits in each byte contain
 // the code-point data. This function removes the UTF-8 markers, combines the
 // data bits from each byte, and reconstructs the Unicode code-point.
-char32_t decode_utf8_codepoint(std::string_view input, std::size_t& index) {
-    unsigned char c = static_cast<unsigned char>(input[index]);
+char32_t decode_utf8_codepoint(const std::string& input, std::size_t& index) {
+    const auto c = static_cast<unsigned char>(input[index]);
 
     // 0xxxxxxx: single-byte UTF-8 character (ASCII)
     if (c < 0x80) {
@@ -96,7 +96,7 @@ void append_utf8_codepoint(std::string& output, char32_t codepoint) {
 }
 
 // https://tanzil.net/docs/uthmani_minimal
-char32_t normalize_utf8_codepoint(char32_t codepoint) {
+std::optional<char32_t> normalize_arabic_codepoint(char32_t codepoint) {
     switch (codepoint) {
         case U'\u064B':  // ARABIC FATHATAN (U+064B)
             [[fallthrough]];
@@ -124,7 +124,7 @@ char32_t normalize_utf8_codepoint(char32_t codepoint) {
         case U'\u06E5':  // ARABIC SMALL WAW (U+06E5)
             [[fallthrough]];
         case U'\u06E6':  // ARABIC SMALL YEH (U+06E6)
-            return 0;
+            return std::nullopt;
 
         case U'\u0671':        // ARABIC LETTER ALEF WASLA (U+0671)
             return U'\u0627';  // ARABIC LETTER ALEF (U+0627)
@@ -138,17 +138,17 @@ char32_t normalize_utf8_codepoint(char32_t codepoint) {
 
 namespace safar {
 
-std::string normalize_text(std::string_view input) {
+std::string normalize_text(const std::string& input) {
     std::string output;
     output.reserve(input.size());
 
-    std::size_t index = 0;
+    std::size_t index{};
     while (index < input.size()) {
         auto codepoint = decode_utf8_codepoint(input, index);
-        auto mapped = normalize_utf8_codepoint(codepoint);
 
-        if (mapped) {
-            append_utf8_codepoint(output, mapped);
+        auto normalized = normalize_arabic_codepoint(codepoint);
+        if (normalized) {
+            append_utf8_codepoint(output, *normalized);
         }
     }
 
