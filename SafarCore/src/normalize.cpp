@@ -124,6 +124,13 @@ std::optional<char32_t> normalize_arabic_codepoint(char32_t codepoint) {
         case U'\u06E5':  // ARABIC SMALL WAW (U+06E5)
             [[fallthrough]];
         case U'\u06E6':  // ARABIC SMALL YEH (U+06E6)
+            [[fallthrough]];
+
+        case U'\u06DD':  // ARABIC END OF AYAH (U+06DD)
+            [[fallthrough]];
+        case U'\u06DE':  // ARABIC START OF RUB EL HIZB (U+06DE)
+            [[fallthrough]];
+        case U'\u06E9':  // ARABIC PLACE OF SAJDAH (U+06E9)
             return std::nullopt;
 
         case U'\u0671':        // ARABIC LETTER ALEF WASLA (U+0671)

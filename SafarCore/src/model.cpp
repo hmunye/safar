@@ -56,6 +56,14 @@ namespace safar {
 
 Model::Model(const std::string& model_path)
     : wparams(whisper_full_default_params(WHISPER_SAMPLING_BEAM_SEARCH)) {
+    whisper_log_set(
+        []([[maybe_unused]] enum ggml_log_level level,
+           [[maybe_unused]] const char* text,
+           [[maybe_unused]] void* user_data) {
+            // Ignore whisper.cpp / ggml logs
+        },
+        nullptr);
+
     whisper_context_params cparams{ whisper_context_default_params() };
 
     ctx = whisper_init_from_file_with_params(model_path.c_str(), cparams);
@@ -64,9 +72,14 @@ Model::Model(const std::string& model_path)
     }
 
     wparams.translate = false;
-
     wparams.language = "ar";
     wparams.detect_language = false;
+    wparams.beam_search.beam_size = 5;
+
+    wparams.temperature = 0.0f;
+    wparams.temperature_inc = 0.0f;
+
+    wparams.no_context = true;
 }
 
 Model::~Model() {

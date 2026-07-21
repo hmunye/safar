@@ -17,9 +17,12 @@ class IdentifierError : public std::runtime_error {
 
 // Verse identified from a recitation audio clip and associated metadata.
 struct VerseMatch {
+    std::string_view text;
+    // Confidence score indicating how strongly this verse matches the
+    // identified recitation segment, in the range [0.0, 1.0].
+    float confidence;
     std::uint16_t surah;
     std::uint16_t ayah;
-    std::string_view text;
 };
 
 // Identifies Quran verses recited in an audio clip.

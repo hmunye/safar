@@ -1,5 +1,6 @@
 #include "libsafar/libsafar.hpp"
 
+#include <iomanip>
 #include <iostream>
 #include <string>
 
@@ -17,14 +18,17 @@ int main(int argc, char* argv[]) {
 
         const auto verses = ri.identify_verses(audio_path);
 
-        for (const auto& v : verses) {
-            std::cout << "match " << v.surah << ":" << v.ayah
-                      << " - matched text: " << v.text << "\n";
+        if (verses.empty()) {
+            std::cout << "no matches found" << "\n";
+        } else {
+            for (const auto& v : verses) {
+                std::cout << std::fixed << std::setprecision(2) << "match "
+                          << v.surah << ":" << v.ayah << " (" << v.confidence
+                          << " confidence) - matched text: " << v.text << "\n";
+            }
         }
     } catch (const safar::IdentifierError& e) {
         std::cerr << e.what() << "\n";
         return 1;
     }
-
-    std::cout << "\n";
 }
