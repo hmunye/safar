@@ -30,36 +30,36 @@ WHISPER_VENDOR_DIR="${SCRIPT_DIR}/Sources/SafarCore/vendor/whisper.cpp"
 HF_REPO="https://huggingface.co/tarteel-ai/whisper-base-ar-quran"
 OPENAI_WHISPER_REPO="https://github.com/openai/whisper.git"
 
-MODEL_NAME="whisper-base-ar-quran-ggml.bin"
-MODEL_OUTPUT="${SCRIPT_DIR}/Safar/Resources/Models/${MODEL_NAME}"
+MODEL_NAME="whisper-base-ar-quran-ggml"
+MODEL_OUTPUT="${SCRIPT_DIR}/Safar/Resources/Models/${MODEL_NAME}.bin"
 
 TMP_DIR="$(mktemp -d)"
-trap 'rm -rf "${TMP_DIR}"' EXIT
-
 printf "\033[0;34m==> using tmp directory: ${TMP_DIR}\033[0m\n" 1>&2
 
-MODEL_DIR="${TMP_DIR}/whisper-base-ar-quran"
-OPENAI_WHISPER_DIR="${TMP_DIR}/whisper"
-VENV_DIR="${TMP_DIR}/venv"
+trap 'rm -rf "${TMP_DIR}"' EXIT
+
+MODEL_TMP_DIR="${TMP_DIR}/whisper-base-ar-quran"
+OPENAI_WHISPER_TMP_DIR="${TMP_DIR}/whisper"
+VENV_TMP_DIR="${TMP_DIR}/venv"
 
 printf "\033[0;34m==> cloning tarteel-ai/whisper-base-ar-quran...\033[0m\n" 1>&2
-git clone --depth 1 "${HF_REPO}" "${MODEL_DIR}"
+git clone --depth 1 "${HF_REPO}" "${MODEL_TMP_DIR}"
 
 printf "\033[0;34m==> cloning openai/whisper.git...\033[0m\n" 1>&2
-git clone --depth 1 "${OPENAI_WHISPER_REPO}" "${OPENAI_WHISPER_DIR}"
+git clone --depth 1 "${OPENAI_WHISPER_REPO}" "${OPENAI_WHISPER_TMP_DIR}"
 
 printf "\033[0;34m==> creating python venv...\033[0m\n" 1>&2
-python3 -m venv "${VENV_DIR}"
-source "${VENV_DIR}/bin/activate"
+python3 -m venv "${VENV_TMP_DIR}"
+source "${VENV_TMP_DIR}/bin/activate"
 
-printf "\033[0;34m==> installing conversion dependencies...\033[0m\n" 1>&2
-"${VENV_DIR}/bin/python" -m pip install --quiet --upgrade pip
-"${VENV_DIR}/bin/python" -m pip install --quiet transformers numpy torch
+printf "\033[0;34m==> installing model conversion dependencies...\033[0m\n" 1>&2
+"${VENV_TMP_DIR}/bin/python" -m pip install --quiet --upgrade pip
+"${VENV_TMP_DIR}/bin/python" -m pip install --quiet transformers numpy torch
 
 printf "\033[0;34m==> converting model...\033[0m\n" 1>&2
-"${VENV_DIR}/bin/python" "${WHISPER_VENDOR_DIR}/models/convert-h5-to-ggml.py" \
-    "${MODEL_DIR}" \
-    "${OPENAI_WHISPER_DIR}" \
+"${VENV_TMP_DIR}/bin/python" "${WHISPER_VENDOR_DIR}/models/convert-h5-to-ggml.py" \
+    "${MODEL_TMP_DIR}" \
+    "${OPENAI_WHISPER_TMP_DIR}" \
     "${TMP_DIR}"
 
 if [[ ! -f "${TMP_DIR}/ggml-model.bin" ]]; then
@@ -67,6 +67,7 @@ if [[ ! -f "${TMP_DIR}/ggml-model.bin" ]]; then
     exit 1
 fi
 
+printf "\033[0;34m==> moving converted model...\033[0m\n" 1>&2
 mkdir -p "$(dirname "${MODEL_OUTPUT}")"
 mv "${TMP_DIR}/ggml-model.bin" "${MODEL_OUTPUT}"
 

@@ -5,8 +5,6 @@ processing to identify verses from audio, played back in a scrollable feed.
 
 ## Setup
 
-### Model
-
 This project uses [`tarteel-ai/whisper-base-ar-quran`](https://huggingface.co/tarteel-ai/whisper-base-ar-quran),
 converted for use with [`ggml-org/whisper.cpp`](https://github.com/ggml-org/whisper.cpp).
 

@@ -82,6 +82,8 @@ create_xcframework() {
 
     rm -rf "$XCFRAMEWORK_OUTPUT"
 
+    printf "\033[0;34m==> preparing library for iOS device...\033[0m\n" 1>&2
+
     libtool -static \
         -o "$DEVICE_BUILD/bin/Release/libsafar_whisper.a" \
         "$DEVICE_BUILD/bin/Release/libsafar.a" \
@@ -91,6 +93,8 @@ create_xcframework() {
         "$DEVICE_BUILD/bin/Release/libggml-blas.a" \
         "$DEVICE_BUILD/bin/Release/libggml-cpu.a" \
         "$DEVICE_BUILD/bin/Release/libggml-metal.a"
+
+    printf "\033[0;34m==> preparing library for iOS simulator...\033[0m\n" 1>&2
 
     libtool -static \
         -o "$SIMULATOR_BUILD/bin/Release/libsafar_whisper.a" \
