@@ -86,14 +86,14 @@ create_xcframework() {
 
     rm -rf "$XCFRAMEWORK_OUTPUT"
 
-    # libtool -static \
-    #     -o "$DEVICE_BUILD/bin/Release/libsafar_w.a" \
-    #     "$DEVICE_BUILD/bin/Release/libsafar.a" \
-    #     "$DEVICE_BUILD/bin/Release/libwhisper.a" \
-    #     "$DEVICE_BUILD/bin/Release/libggml.a" \
-    #     "$DEVICE_BUILD/bin/Release/libggml-base.a" \
-    #     "$DEVICE_BUILD/bin/Release/libggml-blas.a" \
-    #     "$DEVICE_BUILD/bin/Release/libggml-cpu.a"
+    libtool -static \
+        -o "$DEVICE_BUILD/bin/Release/libsafar_whisper.a" \
+        "$DEVICE_BUILD/bin/Release/libsafar.a" \
+        "$DEVICE_BUILD/bin/Release/libwhisper.a" \
+        "$DEVICE_BUILD/bin/Release/libggml.a" \
+        "$DEVICE_BUILD/bin/Release/libggml-base.a" \
+        "$DEVICE_BUILD/bin/Release/libggml-blas.a" \
+        "$DEVICE_BUILD/bin/Release/libggml-cpu.a"
 
     libtool -static \
         -o "$SIMULATOR_BUILD/bin/Release/libsafar_whisper.a" \
@@ -105,14 +105,14 @@ create_xcframework() {
         "$SIMULATOR_BUILD/bin/Release/libggml-cpu.a"
 
     xcodebuild -create-xcframework \
+        -library "$DEVICE_BUILD/bin/Release/libsafar_whisper.a" \
+        -headers "$SCRIPT_DIR/include" \
         -library "$SIMULATOR_BUILD/bin/Release/libsafar_whisper.a" \
         -headers "$SCRIPT_DIR/include" \
         -output "$XCFRAMEWORK_OUTPUT"
-        # -library "$DEVICE_BUILD/bin/Release/libsafar_whisper.a" \
-        # -headers "$SCRIPT_DIR/include" \
 }
 
 build_corpus
-# build_ios
+build_ios
 build_simulator
 create_xcframework
