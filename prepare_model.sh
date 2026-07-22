@@ -24,7 +24,7 @@ if ! command -v python3 >/dev/null 2>&1; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VENDOR_WHISPER_DIR="${SCRIPT_DIR}/SafarCore/vendor/whisper.cpp"
+VENDOR_WHISPER_DIR="${SCRIPT_DIR}/Sources/SafarCore/vendor/whisper.cpp"
 
 HF_REPO="https://huggingface.co/tarteel-ai/whisper-base-ar-quran"
 OPENAI_WHISPER_REPO="https://github.com/openai/whisper.git"
