@@ -1,0 +1,4 @@
+module SafarCore {
+    header "libsafar/libsafar.hpp"
+    export *
+}
