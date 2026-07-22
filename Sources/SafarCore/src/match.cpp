@@ -291,7 +291,7 @@ std::vector<VerseMatch> match_transcription(const std::string& transcript) {
 
         if (c >= min_confidence) {
             verses.push_back({
-                .text = entry.text,
+                .text = std::string(entry.text),
                 .confidence = c,
                 .surah = entry.surah,
                 .ayah = entry.ayah,

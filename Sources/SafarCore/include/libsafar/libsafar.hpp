@@ -4,7 +4,6 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 #include <vector>
 
 namespace safar {
@@ -17,7 +16,7 @@ class IdentifierError : public std::runtime_error {
 
 // Verse identified from a recitation audio clip and associated metadata.
 struct VerseMatch {
-    std::string_view text;
+    std::string text;
     // Confidence score indicating how strongly this verse matches the
     // identified recitation segment, in the range [0.0, 1.0].
     float confidence;
