@@ -52,9 +52,7 @@ build_ios() {
         -DCMAKE_OSX_ARCHITECTURES=arm64 \
         -DCMAKE_OSX_SYSROOT=iphoneos \
         -DCMAKE_SYSTEM_NAME=iOS \
-        -DGGML_METAL=OFF \
-        -DGGML_METAL_EMBED_LIBRARY=OFF
-        # -DWHISPER_COREML=ON
+        -DGGML_METAL=ON
 
     cmake \
         --build "$DEVICE_BUILD" \
@@ -72,9 +70,7 @@ build_simulator() {
         -DCMAKE_OSX_ARCHITECTURES=arm64 \
         -DCMAKE_OSX_SYSROOT=iphonesimulator \
         -DCMAKE_SYSTEM_NAME=iOS \
-        -DGGML_METAL=OFF \
-        -DGGML_METAL_EMBED_LIBRARY=OFF
-        # -DWHISPER_COREML=ON
+        -DGGML_METAL=OFF
 
     cmake \
         --build "$SIMULATOR_BUILD" \
@@ -93,7 +89,8 @@ create_xcframework() {
         "$DEVICE_BUILD/bin/Release/libggml.a" \
         "$DEVICE_BUILD/bin/Release/libggml-base.a" \
         "$DEVICE_BUILD/bin/Release/libggml-blas.a" \
-        "$DEVICE_BUILD/bin/Release/libggml-cpu.a"
+        "$DEVICE_BUILD/bin/Release/libggml-cpu.a" \
+        "$DEVICE_BUILD/bin/Release/libggml-metal.a"
 
     libtool -static \
         -o "$SIMULATOR_BUILD/bin/Release/libsafar_whisper.a" \

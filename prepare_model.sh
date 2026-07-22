@@ -25,7 +25,7 @@ fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-VENDOR_WHISPER_DIR="${SCRIPT_DIR}/Sources/SafarCore/vendor/whisper.cpp"
+WHISPER_VENDOR_DIR="${SCRIPT_DIR}/Sources/SafarCore/vendor/whisper.cpp"
 
 HF_REPO="https://huggingface.co/tarteel-ai/whisper-base-ar-quran"
 OPENAI_WHISPER_REPO="https://github.com/openai/whisper.git"
@@ -53,11 +53,11 @@ python3 -m venv "${VENV_DIR}"
 source "${VENV_DIR}/bin/activate"
 
 printf "\033[0;34m==> installing conversion dependencies...\033[0m\n" 1>&2
-pip install --quiet --upgrade pip
-pip install --quiet transformers numpy torch
+"${VENV_DIR}/bin/python" -m pip install --quiet --upgrade pip
+"${VENV_DIR}/bin/python" -m pip install --quiet transformers numpy torch
 
 printf "\033[0;34m==> converting model...\033[0m\n" 1>&2
-python3 "${VENDOR_WHISPER_DIR}/models/convert-h5-to-ggml.py" \
+"${VENV_DIR}/bin/python" "${WHISPER_VENDOR_DIR}/models/convert-h5-to-ggml.py" \
     "${MODEL_DIR}" \
     "${OPENAI_WHISPER_DIR}" \
     "${TMP_DIR}"
