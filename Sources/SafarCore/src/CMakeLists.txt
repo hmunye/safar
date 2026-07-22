@@ -23,6 +23,7 @@ target_compile_options(libsafar PUBLIC
     -Wextra 
     -Werror 
     -Wpedantic
+    -Wno-error=overlength-strings
 )
 
 target_include_directories(libsafar
