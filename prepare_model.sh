@@ -24,6 +24,7 @@ if ! command -v python3 >/dev/null 2>&1; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 VENDOR_WHISPER_DIR="${SCRIPT_DIR}/Sources/SafarCore/vendor/whisper.cpp"
 
 HF_REPO="https://huggingface.co/tarteel-ai/whisper-base-ar-quran"
@@ -35,14 +36,14 @@ MODEL_OUTPUT="${SCRIPT_DIR}/Safar/Resources/Models/${MODEL_NAME}"
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "${TMP_DIR}"' EXIT
 
-printf "\033[0;34m==> using temp directory: ${TMP_DIR}\033[0m\n" 1>&2
+printf "\033[0;34m==> using tmp directory: ${TMP_DIR}\033[0m\n" 1>&2
 
 MODEL_DIR="${TMP_DIR}/whisper-base-ar-quran"
 OPENAI_WHISPER_DIR="${TMP_DIR}/whisper"
 VENV_DIR="${TMP_DIR}/venv"
 
 printf "\033[0;34m==> cloning tarteel-ai/whisper-base-ar-quran...\033[0m\n" 1>&2
-git clone "${HF_REPO}" "${MODEL_DIR}"
+git clone --depth 1 "${HF_REPO}" "${MODEL_DIR}"
 
 printf "\033[0;34m==> cloning openai/whisper.git...\033[0m\n" 1>&2
 git clone --depth 1 "${OPENAI_WHISPER_REPO}" "${OPENAI_WHISPER_DIR}"

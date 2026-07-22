@@ -11,10 +11,13 @@ set_target_properties(libsafar PROPERTIES
     OUTPUT_NAME safar
 )
 
-add_dependencies(libsafar generate_corpus)
+if (NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    add_dependencies(libsafar generate_corpus)
+endif()
+
 target_sources(libsafar
     PRIVATE
-        ${CMAKE_BINARY_DIR}/generated/corpus.cpp
+    ${CMAKE_BINARY_DIR}/generated/corpus.cpp
 )
 
 target_compile_features(libsafar PUBLIC cxx_std_20)

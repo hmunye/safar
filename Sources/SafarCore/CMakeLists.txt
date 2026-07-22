@@ -12,13 +12,16 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_subdirectory(tools)
+if (NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    add_subdirectory(tools)
+
+    add_executable(safar main.cpp)
+
+    target_link_libraries(safar
+        PRIVATE
+            safar::libsafar
+    )
+endif()
+
 add_subdirectory(src)
 add_subdirectory(vendor/whisper.cpp)
-
-add_executable(safar main.cpp)
-
-target_link_libraries(safar
-    PRIVATE
-        safar::libsafar
-)

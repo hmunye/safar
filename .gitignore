@@ -4,6 +4,8 @@
 DerivedData/
 
 .build/
+XCFramework/
+!XCFramework/.gitignore
 
 *.ipa
 *.dSYM
