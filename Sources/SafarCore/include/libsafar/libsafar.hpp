@@ -46,7 +46,7 @@ class RecitationIdentifier {
     //
     // Throws `safar::IdentifierError` if processing fails.
     [[nodiscard]] std::vector<VerseMatch> identify_verses(
-        const std::string& audio_path);
+        const std::string& audio_path) const;
 };
 
 }  // namespace safar

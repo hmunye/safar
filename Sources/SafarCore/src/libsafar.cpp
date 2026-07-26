@@ -27,7 +27,7 @@ RecitationIdentifier& RecitationIdentifier::operator=(
     RecitationIdentifier&&) noexcept = default;
 
 std::vector<VerseMatch> RecitationIdentifier::identify_verses(
-    const std::string& audio_path) {
+    const std::string& audio_path) const {
     const auto transcript = impl_->model.transcribe(audio_path);
 
     return match_transcription(transcript);
