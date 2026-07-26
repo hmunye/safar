@@ -18,7 +18,7 @@ final class AssetManager {
         )
     }
 
-    func saveAudio(from audioURL: URL) async throws -> RecitationClip {
+    func saveAudio(from audioURL: URL) async throws -> URL {
         let asset = AVURLAsset(url: audioURL)
 
         let destinationURL =
@@ -42,9 +42,7 @@ final class AssetManager {
                 as: .m4a
             )
 
-            return RecitationClip(
-                audioURL: destinationURL.path
-            )
+            return destinationURL
 
         } catch is CancellationError {
             throw AssetError.cancelled
@@ -55,10 +53,26 @@ final class AssetManager {
             )
         }
     }
+
+    func deleteAudio(at audioURL: URL) throws {
+        guard FileManager.default.fileExists(atPath: audioURL.path) else {
+            throw AssetError.audioNotFound
+        }
+
+        do {
+            try FileManager.default.removeItem(at: audioURL)
+        } catch {
+            throw AssetError.deletionFailed(
+                error.localizedDescription
+            )
+        }
+    }
 }
 
 enum AssetError: Error {
     case exportSessionFailed
     case exportFailed(String)
     case cancelled
+    case audioNotFound
+    case deletionFailed(String)
 }

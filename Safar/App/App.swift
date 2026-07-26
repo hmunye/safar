@@ -3,7 +3,7 @@ import SwiftUI
 
 @main
 struct SafarApp: App {
-    let runtime = SafarRuntime()
+    let runtime = RecognitionRuntime()
 
     var body: some Scene {
         WindowGroup {
@@ -19,7 +19,7 @@ struct SafarApp: App {
 }
 
 #Preview {
-    RootView(runtime: SafarRuntime())
+    RootView(runtime: RecognitionRuntime())
         .modelContainer(
             for: [
                 RecitationClip.self,

@@ -3,12 +3,10 @@ import SwiftData
 import SwiftUI
 
 struct RootView: View {
-    let runtime: SafarRuntime
+    private let recitationProcessor: RecitationProcessor
 
-    private let assetManager = AssetManager()
-    private let audioProcessor = AudioProcessor()
-
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.modelContext)
+    private var modelContext
 
     @Query(
         sort: \RecitationClip.createdAt,
@@ -17,7 +15,15 @@ struct RootView: View {
     private var clips: [RecitationClip]
 
     @State private var selectedPhotoItem: PhotosPickerItem?
-    @State private var status = "Select a recitation video"
+    @State private var status = "Select a Recitation Video"
+
+    init(runtime: RecognitionRuntime) {
+        self.recitationProcessor = RecitationProcessor(
+            assetManager: AssetManager(),
+            audioProcessor: AudioProcessor(),
+            runtime: runtime
+        )
+    }
 
     var body: some View {
         VStack(spacing: 20) {
@@ -32,7 +38,10 @@ struct RootView: View {
                 .font(.caption)
 
             List(clips) { clip in
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(
+                    alignment: .leading,
+                    spacing: 8
+                ) {
                     Text(
                         clip.createdAt.formatted()
                     )
@@ -51,7 +60,9 @@ struct RootView: View {
                     .foregroundStyle(.secondary)
 
                     ForEach(clip.matches) { verse in
-                        VStack(alignment: .leading) {
+                        VStack(
+                            alignment: .leading
+                        ) {
                             Text(
                                 "\(verse.surah):\(verse.ayah)"
                             )
@@ -71,122 +82,38 @@ struct RootView: View {
                 }
                 .padding(.vertical, 4)
             }
-
         }
         .padding()
         .onChange(of: selectedPhotoItem) { _, item in
-            guard let item else { return }
+            guard let item else {
+                return
+            }
 
             Task {
-                await process(item: item)
+                await process(item)
             }
         }
     }
 
-    private func process(item: PhotosPickerItem) async {
-        do {
-            status = "Loading video..."
-
-            guard let data = try await item.loadTransferable(type: Data.self)
-            else {
-                throw NSError(
-                    domain: "RootView",
-                    code: -1,
-                    userInfo: [
-                        NSLocalizedDescriptionKey:
-                            "Failed to load video data"
-                    ]
-                )
-            }
-
-            let tempURL = FileManager.default.temporaryDirectory
-                .appending(
-                    path: "video-\(UUID()).mov"
-                )
-
-            try data.write(to: tempURL)
-
-            status = "Saving audio clip..."
-
-            let savedClip = try await assetManager.saveAudio(
-                from: tempURL
-            )
-
-            let clip = RecitationClip(
-                audioURL: savedClip.audioURL
-            )
-
-            modelContext.insert(clip)
-
-            try modelContext.save()
-
-            await processAudio(
-                URL(fileURLWithPath: savedClip.audioURL),
-                clip: clip
-            )
-
-        } catch {
-            status = "Error: \(error.localizedDescription)"
-        }
-    }
-
-    private func processAudio(
-        _ url: URL,
-        clip: RecitationClip
+    private func process(
+        _ item: PhotosPickerItem
     ) async {
 
         do {
-            clip.status = .processing
-            try modelContext.save()
+            status = "Processing..."
 
-            status = """
-                Preparing recognition:
-                \(url.lastPathComponent)
-                """
-
-            let wavURL =
-                try await audioProcessor
-                .convertTo16kHzMonoPCM16Wav(
-                    from: url
-                )
-
-            status = "Running identifier..."
-
-            let matches = await runtime.identifyVerses(
-                from: wavURL
+            try await recitationProcessor.process(
+                item: item,
+                modelContext: modelContext
             )
 
-            for match in matches {
-
-                let verse = RecognizedVerse(
-                    surah: match.surah,
-                    ayah: match.ayah,
-                    confidence: match.confidence,
-                    text: match.text,
-                    clip: clip
-                )
-
-                modelContext.insert(verse)
-            }
-
-            clip.status =
-                matches.isEmpty
-                ? .failed
-                : .completed
-
-            try modelContext.save()
-
-            if matches.isEmpty {
-                status = "Finished - no matches"
-            } else {
-                status = "Finished - \(matches.count) matches"
-            }
+            status = "Finished"
 
         } catch {
-            clip.status = .failed
-            try? modelContext.save()
-
-            status = "Error: \(error.localizedDescription)"
+            status = """
+                Error:
+                \(error.localizedDescription)
+                """
         }
     }
 }

@@ -9,7 +9,7 @@ struct VerseMatch {
     let text: String
 }
 
-final class SafarRuntime {
+final class RecognitionRuntime {
     private var recognizer: safar.RecitationIdentifier?
 
     func identifyVerses(

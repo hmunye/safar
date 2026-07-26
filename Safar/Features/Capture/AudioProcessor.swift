@@ -2,7 +2,7 @@ import AVFoundation
 import Foundation
 
 final class AudioProcessor {
-    func convertTo16kHzMonoPCM16Wav(from audioURL: URL) async throws -> URL {
+    func convertTo16kHzMonoPCM16WAV(from audioURL: URL) async throws -> URL {
         let asset = AVURLAsset(url: audioURL)
 
         guard
