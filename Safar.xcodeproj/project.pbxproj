@@ -21,6 +21,7 @@
 		864EA082301069D800F856D5 /* Exceptions for "Safar" folder in "Safar" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Info.plist,
 				Resources/Models/.gitignore,
 			);
 			target = 861B6F1830071E4500F0135A /* Safar */;
@@ -292,6 +293,7 @@
 				"EXCLUDED_SOURCE_FILE_NAMES[arch=*]" = "$(PROJECT_DIR)/Sources/SafarCore/vendor/**";
 				GCC_WARN_PEDANTIC = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Safar/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Safar;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -336,6 +338,7 @@
 				"EXCLUDED_SOURCE_FILE_NAMES[arch=*]" = "$(PROJECT_DIR)/Sources/SafarCore/vendor/**";
 				GCC_WARN_PEDANTIC = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Safar/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Safar;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

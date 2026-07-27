@@ -8,22 +8,28 @@ struct FeedView: View {
     )
     private var clips: [RecitationClip]
 
+    @State private var audioPlayer = AudioPlayer()
+
     var body: some View {
-        ZStack {
-            if clips.isEmpty {
-                ContentUnavailableView(
-                    "No Recitation Clips",
-                    systemImage: "waveform",
-                )
-                .foregroundStyle(Colors.foreground)
-            } else {
-                List(clips) { clip in
-                    RecitationCardView(
-                        clip: clip
-                    )
+        if clips.isEmpty {
+            ContentUnavailableView(
+                "No Recitation Clips",
+                systemImage: "waveform"
+            )
+            .foregroundStyle(Colors.foreground)
+        } else {
+            ScrollView(.vertical) {
+                LazyVStack(spacing: 0) {
+                    ForEach(clips) { clip in
+                        CardView(
+                            clip: clip,
+                            audioPlayer: audioPlayer
+                        ).containerRelativeFrame(.vertical)
+                    }
                 }
-                .listStyle(.plain)
             }
+            .scrollTargetBehavior(.paging)
+            .scrollIndicators(.hidden)
         }
     }
 }

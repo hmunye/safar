@@ -9,7 +9,7 @@ struct VerseMatch {
     let text: String
 }
 
-final class RecognitionRuntime {
+actor RecognitionRuntime {
     private var recognizer: safar.RecitationIdentifier?
 
     func identifyVerses(
@@ -18,25 +18,17 @@ final class RecognitionRuntime {
         initializeOnce()
 
         let path = std.string(audioURL.path)
+        let matches = recognizer!.identify_verses(path)
 
-        return await Task(priority: .userInitiated) {
-            guard self.recognizer != nil else {
-                fatalError("RecitationIdentifier not initialized")
-            }
-
-            let matches = self.recognizer!.identify_verses(path)
-
-            return matches.map { match in
-                VerseMatch(
-                    surah: match.surah,
-                    ayah: match.ayah,
-                    confidence: match.confidence,
-                    text: String(match.text)
-                )
-            }
-        }.value
+        return matches.map { match in
+            VerseMatch(
+                surah: match.surah,
+                ayah: match.ayah,
+                confidence: match.confidence,
+                text: String(match.text)
+            )
+        }
     }
-
     private func initializeOnce() {
         guard self.recognizer == nil else { return }
 

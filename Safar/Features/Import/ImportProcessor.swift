@@ -17,7 +17,7 @@ final class ImportProcessor {
 
     func process(
         item: PhotosPickerItem,
-        modelContext: ModelContext
+        modelContext: ModelContext,
     ) async throws {
         let videoURL = try await createTemporaryVideoURL(
             from: item

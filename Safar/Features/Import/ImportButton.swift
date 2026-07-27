@@ -5,8 +5,7 @@ import SwiftUI
 struct ImportButton: View {
     private let processor: ImportProcessor
 
-    @State
-    private var selectedItem: PhotosPickerItem?
+    @State private var selectedItem: PhotosPickerItem?
 
     @Environment(\.modelContext)
     private var modelContext
@@ -37,7 +36,7 @@ struct ImportButton: View {
             Task {
                 try? await processor.process(
                     item: item,
-                    modelContext: modelContext
+                    modelContext: modelContext,
                 )
 
                 selectedItem = nil

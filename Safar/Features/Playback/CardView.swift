@@ -1,44 +1,33 @@
 import SwiftUI
 
-struct RecitationCardView: View {
+struct CardView: View {
     let clip: RecitationClip
+    let audioPlayer: AudioPlayer
 
     var body: some View {
-        VStack(
-            alignment: .leading,
-            spacing: 12
-        ) {
+        VStack(alignment: .leading, spacing: 12) {
             Text(
                 clip.createdAt.formatted()
             )
-            .font(.headline)
 
             Text(
                 "Status: \(clip.status.rawValue)"
             )
-            .font(.caption)
-            .foregroundStyle(.secondary)
+
+            Button {
+                let url = URL(
+                    filePath: clip.audioURL
+                )
+                
+                audioPlayer.play(url: url)
+            } label: {
+                Image(systemName: "play.fill")
+            }
 
             ForEach(clip.matches) { verse in
-                VStack(
-                    alignment: .leading,
-                    spacing: 4
-                ) {
-                    Text(
-                        "\(verse.surah):\(verse.ayah)"
-                    )
-                    .font(.subheadline)
-                    .bold()
-
-                    Text(
-                        verse.text
-                    )
-
-                    Text(
-                        "Confidence: \(verse.confidence, specifier: "%.2f")"
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading) {
+                    Text("\(verse.surah):\(verse.ayah)")
+                    Text(verse.text)
                 }
             }
         }
