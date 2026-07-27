@@ -5,17 +5,10 @@ import SwiftUI
 struct RootView: View {
     private let recitationProcessor: RecitationProcessor
 
+    @State private var selectedItem: PhotosPickerItem?
+
     @Environment(\.modelContext)
     private var modelContext
-
-    @Query(
-        sort: \RecitationClip.createdAt,
-        order: .reverse
-    )
-    private var clips: [RecitationClip]
-
-    @State private var selectedPhotoItem: PhotosPickerItem?
-    @State private var status = "Select a Recitation Video"
 
     init(runtime: RecognitionRuntime) {
         self.recitationProcessor = RecitationProcessor(
@@ -26,65 +19,41 @@ struct RootView: View {
     }
 
     var body: some View {
-        VStack(spacing: 20) {
-            PhotosPicker(
-                "Select Recitation Video",
-                selection: $selectedPhotoItem,
-                matching: .videos
-            )
+        ZStack {
+            Colors.background
+                .ignoresSafeArea()
 
-            Text(status)
-                .multilineTextAlignment(.center)
-                .font(.caption)
-
-            List(clips) { clip in
-                VStack(
-                    alignment: .leading,
-                    spacing: 8
-                ) {
-                    Text(
-                        clip.createdAt.formatted()
-                    )
-                    .font(.headline)
-
-                    Text(
-                        "Status: \(clip.status.rawValue)"
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                    Text(
-                        clip.audioURL
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                    ForEach(clip.matches) { verse in
-                        VStack(
-                            alignment: .leading
-                        ) {
-                            Text(
-                                "\(verse.surah):\(verse.ayah)"
-                            )
-                            .font(.subheadline)
-
-                            Text(
-                                verse.text
-                            )
-
-                            Text(
-                                "Confidence: \(verse.confidence, specifier: "%.2f")"
-                            )
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-                .padding(.vertical, 4)
-            }
+            FeedView()
         }
-        .padding()
-        .onChange(of: selectedPhotoItem) { _, item in
+        .safeAreaInset(edge: .top) {
+            HStack {
+                PhotosPicker(
+                    selection: $selectedItem,
+                    matching: .videos
+                ) {
+                    Image(systemName: "plus")
+                        .font(.title3)
+                        .foregroundStyle(Colors.foreground)
+                        .padding(12)
+                        .glassEffect()
+                }
+
+                Spacer()
+
+                Button {
+                } label: {
+                    Image(systemName: "rectangle.stack")
+                        .font(.title3)
+                        .foregroundStyle(Colors.foreground)
+                        .padding(12)
+                        .glassEffect()
+
+                }
+            }
+            .padding(.horizontal, 30)
+            .padding(.top, 20)
+        }
+        .onChange(of: selectedItem) { _, item in
             guard let item else {
                 return
             }
@@ -98,22 +67,16 @@ struct RootView: View {
     private func process(
         _ item: PhotosPickerItem
     ) async {
-
         do {
-            status = "Processing..."
-
             try await recitationProcessor.process(
                 item: item,
                 modelContext: modelContext
             )
-
-            status = "Finished"
-
         } catch {
-            status = """
-                Error:
-                \(error.localizedDescription)
-                """
+            print(
+                "Processing failed:",
+                error.localizedDescription
+            )
         }
     }
 }
