@@ -1,14 +1,16 @@
 import AVFoundation
 import Foundation
 
-final class AudioProcessor {
-    func convertTo16kHzMonoPCM16WAV(from audioURL: URL) async throws -> URL {
+enum AudioConverter {
+    static func convertTo16kHzMonoPCM16WAV(
+        from audioURL: URL
+    ) async throws -> URL {
         let asset = AVURLAsset(url: audioURL)
 
         guard
             let track = try await asset.loadTracks(withMediaType: .audio).first
         else {
-            throw AudioProcessorError.noAudioTrack
+            throw AudioConverterError.noAudioTrack
         }
 
         let outputSettings: [String: Any] = [
@@ -22,14 +24,13 @@ final class AudioProcessor {
         ]
 
         let reader = try AVAssetReader(asset: asset)
-
         let readerOutput = AVAssetReaderTrackOutput(
             track: track,
             outputSettings: outputSettings
         )
 
         guard reader.canAdd(readerOutput) else {
-            throw AudioProcessorError.incompatibleTrack
+            throw AudioConverterError.incompatibleTrack
         }
 
         reader.add(readerOutput)
@@ -43,7 +44,6 @@ final class AudioProcessor {
         )
 
         let wavFile = try FileHandle(forWritingTo: wavURL)
-
         try writeWavHeader(
             to: wavFile,
             sampleRate: 16_000,
@@ -52,11 +52,11 @@ final class AudioProcessor {
             dataSize: 0
         )
 
-        var pcmBytesWritten: UInt32 = 0
-
         guard reader.startReading() else {
-            throw reader.error ?? AudioProcessorError.failedToStart
+            throw reader.error ?? AudioConverterError.failedToStart
         }
+
+        var pcmBytesWritten: UInt32 = 0
 
         while reader.status == .reading {
             guard let sampleBuffer = readerOutput.copyNextSampleBuffer()
@@ -104,11 +104,10 @@ final class AudioProcessor {
         }
 
         if reader.status == .failed {
-            throw reader.error ?? AudioProcessorError.processingFailed
+            throw reader.error ?? AudioConverterError.processingFailed
         }
 
         try wavFile.seek(toOffset: 0)
-
         try writeWavHeader(
             to: wavFile,
             sampleRate: 16_000,
@@ -122,7 +121,7 @@ final class AudioProcessor {
         return wavURL
     }
 
-    private func writeWavHeader(
+    private static func writeWavHeader(
         to file: FileHandle,
         sampleRate: UInt32,
         channels: UInt16,
@@ -130,7 +129,6 @@ final class AudioProcessor {
         dataSize: UInt32
     ) throws {
         let byteRate = sampleRate * UInt32(channels) * UInt32(bitsPerSample / 8)
-
         let blockAlign = channels * (bitsPerSample / 8)
 
         var header = Data()
@@ -169,7 +167,7 @@ final class AudioProcessor {
     }
 }
 
-enum AudioProcessorError: Error {
+enum AudioConverterError: Error {
     case noAudioTrack
     case incompatibleTrack
     case failedToStart

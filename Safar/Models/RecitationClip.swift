@@ -8,15 +8,15 @@ class RecitationClip {
     var status: ClipStatus
     var audioURL: String
 
-    @Relationship(deleteRule: .cascade, inverse: \RecognizedVerse.clip)
-    var matches: [RecognizedVerse]
+    @Relationship(deleteRule: .cascade, inverse: \Verse.clip)
+    var matches: [Verse]
 
     init(
         id: UUID = UUID(),
         createdAt: Date = .now,
         status: ClipStatus = .pending,
         audioURL: String,
-        matches: [RecognizedVerse] = []
+        matches: [Verse] = []
     ) {
         self.id = id
         self.createdAt = createdAt

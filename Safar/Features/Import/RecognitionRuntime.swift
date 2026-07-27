@@ -3,9 +3,9 @@ import Foundation
 import SafarCore
 
 struct VerseMatch {
-    let surah: Int
-    let ayah: Int
-    let confidence: Float
+    let surah: UInt16
+    let ayah: UInt16
+    let confidence: Float32
     let text: String
 }
 
@@ -28,8 +28,8 @@ final class RecognitionRuntime {
 
             return matches.map { match in
                 VerseMatch(
-                    surah: Int(match.surah),
-                    ayah: Int(match.ayah),
+                    surah: match.surah,
+                    ayah: match.ayah,
                     confidence: match.confidence,
                     text: String(match.text)
                 )

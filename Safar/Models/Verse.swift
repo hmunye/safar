@@ -2,18 +2,18 @@ import Foundation
 import SwiftData
 
 @Model
-class RecognizedVerse {
-    var surah: Int
-    var ayah: Int
-    var confidence: Float
+class Verse {
+    var surah: UInt16
+    var ayah: UInt16
+    var confidence: Float32
     var text: String
 
     var clip: RecitationClip?
 
     init(
-        surah: Int,
-        ayah: Int,
-        confidence: Float,
+        surah: UInt16,
+        ayah: UInt16,
+        confidence: Float32,
         text: String,
         clip: RecitationClip? = nil
     ) {

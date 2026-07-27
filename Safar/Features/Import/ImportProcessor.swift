@@ -3,18 +3,15 @@ import PhotosUI
 import SwiftData
 import SwiftUI
 
-final class RecitationProcessor {
+final class ImportProcessor {
     private let assetManager: AssetManager
-    private let audioProcessor: AudioProcessor
     private let runtime: RecognitionRuntime
 
     init(
         assetManager: AssetManager,
-        audioProcessor: AudioProcessor,
         runtime: RecognitionRuntime
     ) {
         self.assetManager = assetManager
-        self.audioProcessor = audioProcessor
         self.runtime = runtime
     }
 
@@ -47,7 +44,7 @@ final class RecitationProcessor {
         try modelContext.save()
 
         let wavURL =
-            try await audioProcessor
+            try await AudioConverter
             .convertTo16kHzMonoPCM16WAV(
                 from: savedAudioURL
             )
@@ -63,7 +60,7 @@ final class RecitationProcessor {
         )
 
         for match in matches {
-            let verse = RecognizedVerse(
+            let verse = Verse(
                 surah: match.surah,
                 ayah: match.ayah,
                 confidence: match.confidence,
@@ -90,7 +87,7 @@ final class RecitationProcessor {
                 type: Data.self
             )
         else {
-            throw RecitationProcessorError.videoLoadFailed
+            throw ImportProcessorError.videoLoadFailed
         }
 
         let url = FileManager.default
@@ -100,11 +97,10 @@ final class RecitationProcessor {
             )
 
         try data.write(to: url)
-
         return url
     }
 }
 
-enum RecitationProcessorError: Error {
+enum ImportProcessorError: Error {
     case videoLoadFailed
 }

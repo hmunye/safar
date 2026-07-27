@@ -3,27 +3,15 @@ import SwiftUI
 
 @main
 struct SafarApp: App {
-    let runtime = RecognitionRuntime()
-
     var body: some Scene {
         WindowGroup {
-            RootView(runtime: runtime)
+            RootView()
         }
         .modelContainer(
             for: [
                 RecitationClip.self,
-                RecognizedVerse.self,
+                Verse.self,
             ]
         )
     }
-}
-
-#Preview {
-    RootView(runtime: RecognitionRuntime())
-        .modelContainer(
-            for: [
-                RecitationClip.self,
-                RecognizedVerse.self,
-            ]
-        )
 }

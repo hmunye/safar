@@ -46,7 +46,6 @@ final class AssetManager {
 
         } catch is CancellationError {
             throw AssetError.cancelled
-
         } catch {
             throw AssetError.exportFailed(
                 error.localizedDescription
