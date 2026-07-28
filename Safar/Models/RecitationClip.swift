@@ -5,8 +5,7 @@ import SwiftData
 class RecitationClip {
     @Attribute(.unique) var id: UUID
     var createdAt: Date
-    var status: ClipStatus
-    var audioURL: String
+    var audioFilename: String
 
     @Relationship(deleteRule: .cascade, inverse: \Verse.clip)
     var matches: [Verse]
@@ -14,21 +13,12 @@ class RecitationClip {
     init(
         id: UUID = UUID(),
         createdAt: Date = .now,
-        status: ClipStatus = .pending,
-        audioURL: String,
+        audioFilename: String,
         matches: [Verse] = []
     ) {
         self.id = id
         self.createdAt = createdAt
-        self.status = status
-        self.audioURL = audioURL
+        self.audioFilename = audioFilename
         self.matches = matches
     }
-}
-
-enum ClipStatus: String, Codable {
-    case pending
-    case processing
-    case completed
-    case failed
 }

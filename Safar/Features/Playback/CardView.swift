@@ -2,7 +2,7 @@ import SwiftUI
 
 struct CardView: View {
     let clip: RecitationClip
-    let audioPlayer: AudioPlayer
+    let playbackController: PlaybackController
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -10,16 +10,12 @@ struct CardView: View {
                 clip.createdAt.formatted()
             )
 
-            Text(
-                "Status: \(clip.status.rawValue)"
-            )
-
             Button {
-                let url = URL(
-                    filePath: clip.audioURL
-                )
-                
-                audioPlayer.play(url: url)
+                let url = AssetManager()
+                    .url(for: clip.audioFilename)
+
+                playbackController.load(url: url)
+                playbackController.togglePlayback()
             } label: {
                 Image(systemName: "play.fill")
             }

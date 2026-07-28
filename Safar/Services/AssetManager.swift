@@ -18,6 +18,19 @@ final class AssetManager {
         )
     }
 
+    func filename(
+        from url: URL
+    ) -> String {
+        url.lastPathComponent
+    }
+
+    func url(
+        for filename: String
+    ) -> URL {
+        storageDirectory
+            .appending(path: filename)
+    }
+
     func saveAudio(from audioURL: URL) async throws -> URL {
         let asset = AVURLAsset(url: audioURL)
 

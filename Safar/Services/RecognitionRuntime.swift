@@ -29,6 +29,7 @@ actor RecognitionRuntime {
             )
         }
     }
+
     private func initializeOnce() {
         guard self.recognizer == nil else { return }
 

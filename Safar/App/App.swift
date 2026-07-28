@@ -7,11 +7,7 @@ struct SafarApp: App {
     init() {
         let session = AVAudioSession.sharedInstance()
 
-        try? session.setCategory(
-            .playback,
-            mode: .default
-        )
-
+        try? session.setCategory(.playback, mode: .default)
         try? session.setActive(true)
     }
 

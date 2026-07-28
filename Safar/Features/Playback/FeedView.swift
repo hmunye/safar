@@ -8,23 +8,27 @@ struct FeedView: View {
     )
     private var clips: [RecitationClip]
 
-    @State private var audioPlayer = AudioPlayer()
+    @State private var playbackController = PlaybackController()
 
     var body: some View {
         if clips.isEmpty {
             ContentUnavailableView(
-                "No Recitation Clips",
-                systemImage: "waveform"
+                "No Recitations",
+                systemImage: "waveform",
+                description: Text("Import a clip to get started")
+                    .font(.caption)
+                    .foregroundStyle(.secondary),
             )
+            .scaleEffect(1.2)
             .foregroundStyle(Colors.foreground)
         } else {
             ScrollView(.vertical) {
-                LazyVStack(spacing: 0) {
+                LazyVStack {
                     ForEach(clips) { clip in
                         CardView(
                             clip: clip,
-                            audioPlayer: audioPlayer
-                        ).containerRelativeFrame(.vertical)
+                            playbackController: playbackController
+                        )
                     }
                 }
             }

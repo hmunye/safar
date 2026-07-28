@@ -15,10 +15,17 @@ final class ImportProcessor {
         self.runtime = runtime
     }
 
-    func process(
+    func processVideo(
         item: PhotosPickerItem,
         modelContext: ModelContext,
+        session: ImportSession
     ) async throws {
+        session.update(
+            state: .extractingAudio,
+            progress: 0.15,
+            message: "Preparing your audio..."
+        )
+
         let videoURL = try await createTemporaryVideoURL(
             from: item
         )
@@ -33,15 +40,13 @@ final class ImportProcessor {
             from: videoURL
         )
 
-        let clip = RecitationClip(
-            audioURL: savedAudioURL.path
+        session.audioURL = savedAudioURL
+
+        session.update(
+            state: .extractingAudio,
+            progress: 0.35,
+            message: "Audio prepared"
         )
-
-        modelContext.insert(clip)
-
-        clip.status = ClipStatus.processing
-
-        try modelContext.save()
 
         let wavURL =
             try await AudioConverter
@@ -55,28 +60,29 @@ final class ImportProcessor {
             )
         }
 
+        session.update(
+            state: .recognizing,
+            progress: 0.45,
+            message: "Finding verses in your recitation..."
+        )
+
         let matches = await runtime.identifyVerses(
             from: wavURL
         )
 
-        for match in matches {
-            let verse = Verse(
-                surah: match.surah,
-                ayah: match.ayah,
-                confidence: match.confidence,
-                text: match.text,
-                clip: clip
-            )
+        session.matches = matches
 
-            modelContext.insert(verse)
-        }
+        session.update(
+            state: .recognizing,
+            progress: 0.85,
+            message: "Organizing your results..."
+        )
 
-        clip.status =
-            matches.isEmpty
-            ? ClipStatus.failed
-            : .completed
-
-        try modelContext.save()
+        session.update(
+            state: .preview,
+            progress: 1,
+            message: "Your recitation is ready"
+        )
     }
 
     private func createTemporaryVideoURL(
