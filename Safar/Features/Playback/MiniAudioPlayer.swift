@@ -6,14 +6,6 @@ struct MiniAudioPlayer: View {
     let title: String
     let subtitle: String
 
-    private var progress: Double {
-        guard player.duration > 0 else {
-            return 0
-        }
-
-        return player.currentTime / player.duration
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 14) {
@@ -57,59 +49,16 @@ struct MiniAudioPlayer: View {
             .padding(.top, 14)
             .padding(.bottom, 10)
 
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    Capsule()
-                        .fill(.quaternary)
-
-                    Capsule()
-                        .fill(Colors.accent)
-                        .frame(
-                            width: geometry.size.width * progress
-                        )
-                }
-                .frame(height: 3)
-                .contentShape(Rectangle())
-                .gesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { value in
-                            guard player.duration > 0 else {
-                                return
-                            }
-
-                            let percentage = min(
-                                max(
-                                    value.location.x / geometry.size.width,
-                                    0
-                                ),
-                                1
-                            )
-
-                            player.seek(
-                                to: percentage * player.duration
-                            )
-                        }
-                )
-            }
-            .frame(height: 3)
-            .padding(.horizontal, 16)
-            .padding(.bottom, 14)
+            AudioScrubber(playerController: player)
+                .padding(.bottom, 14)
         }
-        .background(
+        .background {
             RoundedRectangle(
                 cornerRadius: 22,
                 style: .continuous
             )
-            .fill(.ultraThinMaterial)
-        )
-        .overlay {
-            RoundedRectangle(
-                cornerRadius: 22,
-                style: .continuous
-            )
-            .strokeBorder(
-                .white.opacity(0.08)
-            )
+            .fill(.clear)
+            .glassEffect()
         }
         .shadow(
             color: .black.opacity(0.08),

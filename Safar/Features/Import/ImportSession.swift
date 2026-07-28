@@ -2,7 +2,7 @@ import Foundation
 
 @Observable
 final class ImportSession {
-    enum State: Int {
+    enum State: Int, Equatable {
         case idle
         case extractingAudio
         case recognizing
@@ -11,7 +11,7 @@ final class ImportSession {
     }
 
     var state: State = .idle
-    var message: String = ""
+    var message = ""
     var progress: Double = 0
     var audioURL: URL?
     var matches: [VerseMatch] = []
@@ -32,7 +32,7 @@ final class ImportSession {
         message = ""
         progress = 0
         audioURL = nil
-        matches = []
+        matches.removeAll()
         errorMessage = nil
     }
 }

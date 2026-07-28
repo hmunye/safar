@@ -1,18 +1,17 @@
 import SwiftUI
 
 struct ProgressSheet: View {
+    @State private var playbackController = PlaybackController()
+
     let session: ImportSession
     let onConfirm: () -> Void
     let onCancel: () -> Void
-
-    @State private var playbackController = PlaybackController()
 
     var body: some View {
         VStack(spacing: 20) {
             switch session.state {
             case .preview:
                 previewContent
-
             default:
                 processingContent
             }
@@ -71,7 +70,15 @@ struct ProgressSheet: View {
                     subtitle: detectedRange
                 )
                 .onAppear {
-                    playbackController.load(url: audioURL)
+                    guard playbackController.duration == 0 else {
+                        return
+                    }
+
+                    do {
+                        try playbackController.load(url: audioURL)
+                    } catch {
+                        print("failed to load audio clip:", error)
+                    }
                 }
             }
 
@@ -99,14 +106,8 @@ struct ProgressSheet: View {
         }
     }
 
-    private var orderedMatches: [VerseMatch] {
-        session.matches.sorted {
-            $0.ayah < $1.ayah
-        }
-    }
-
     private var detectedTitle: String {
-        guard let first = orderedMatches.first else {
+        guard let first = session.matches.first else {
             return "Recitation"
         }
 
@@ -115,29 +116,24 @@ struct ProgressSheet: View {
 
     private var detectedRange: String {
         guard
-            let first = orderedMatches.first,
-            let last = orderedMatches.last
+            let first = session.matches.first,
+            let last = session.matches.last
         else {
             return ""
         }
 
         return "\(first.surah):\(first.ayah) - \(last.surah):\(last.ayah)"
     }
-
     private var title: String {
         switch session.state {
         case .idle:
             "Preparing Recitation"
-
         case .extractingAudio:
             "Preparing Your Audio"
-
         case .recognizing:
             "Finding Your Verses"
-
         case .preview:
             "Recitation Ready"
-
         case .failed:
             "Unable to Process"
         }

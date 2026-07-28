@@ -3,23 +3,32 @@ import SwiftData
 import SwiftUI
 
 struct ImportButton: View {
-    private let processor: ImportProcessor
-
     @Namespace private var namespace
 
-    @State private var selectedItem: PhotosPickerItem?
     @State private var importSession = ImportSession()
-    @State private var showingPhotosPicker = false
-    @State private var showingImportSheet = false
 
-    @Binding private var expanded: Bool
+    @State private var inputURL = ""
+    @State private var selectedItem: PhotosPickerItem?
+
+    @State private var showURLAlert = false
+    @State private var showPhotosPicker = false
+    @State private var showImportSheet = false
+
+    @Binding private var isExpanded: Bool
 
     @Environment(\.modelContext)
     private var modelContext
 
-    init(expanded: Binding<Bool>) {
-        self._expanded = expanded
+    private let playbackController: PlaybackController
+    private let processor: ImportProcessor
 
+    init(
+        isExpanded: Binding<Bool>,
+        playbackController: PlaybackController
+    ) {
+        self._isExpanded = isExpanded
+
+        self.playbackController = playbackController
         self.processor = ImportProcessor(
             assetManager: AssetManager(),
             runtime: RecognitionRuntime()
@@ -28,25 +37,13 @@ struct ImportButton: View {
 
     var body: some View {
         ZStack {
-            if expanded {
-                ImportMenu { source in
-                    switch source {
-                    case .photos:
-                        showingPhotosPicker = true
-
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                            withAnimation(.bouncy) {
-                                expanded.toggle()
-                            }
-                        }
-                    }
-                }
+            if isExpanded {
+                ImportMenu(action: handleSource)
             } else {
                 Button {
                     withAnimation(.bouncy) {
-                        expanded.toggle()
+                        isExpanded.toggle()
                     }
-
                 } label: {
                     Image(systemName: "plus")
                         .font(.title3)
@@ -55,18 +52,49 @@ struct ImportButton: View {
                 }
             }
         }
+        .alert("Import URL", isPresented: $showURLAlert) {
+            TextField("https://...", text: $inputURL)
+
+            Button("Import") {
+                guard let url = URL(string: inputURL) else {
+                    return
+                }
+
+                startImport(
+                    input: .url(url)
+                )
+
+                inputURL.removeAll()
+            }
+            .disabled(!isValidURL)
+
+            Button("Cancel", role: .cancel) {
+                inputURL.removeAll()
+            }
+        }
         .photosPicker(
-            isPresented: $showingPhotosPicker,
+            isPresented: $showPhotosPicker,
             selection: $selectedItem,
             matching: .videos
         )
-        .sheet(isPresented: $showingImportSheet) {
+        .onChange(of: selectedItem) { _, item in
+            guard let item else {
+                return
+            }
+
+            startImport(
+                input: .photosVideo(item)
+            )
+
+            selectedItem = nil
+        }
+        .sheet(isPresented: $showImportSheet) {
             ProgressSheet(
                 session: importSession,
                 onConfirm: saveImport,
                 onCancel: {
                     importSession.reset()
-                    showingImportSheet = false
+                    showImportSheet.toggle()
                 }
             )
             .interactiveDismissDisabled(
@@ -74,38 +102,15 @@ struct ImportButton: View {
                     && importSession.state != .failed
             )
         }
-        .onChange(of: selectedItem) { _, item in
-            guard let item else {
-                return
-            }
-
-            importSession.reset()
-
-            importSession.state =
-                .extractingAudio
-
-            importSession.message =
-                "Preparing your recitation..."
-
-            showingImportSheet = true
-
-            Task {
-                do {
-                    try await processor.processVideo(
-                        item: item,
-                        modelContext: modelContext,
-                        session: importSession,
-                    )
-                } catch {
-                    importSession.state = .failed
-                    importSession.errorMessage =
-                        "We couldn't process this recitation. Please try another video."
-                }
-            }
-        }
         .matchedGeometryEffect(
             id: "import",
             in: namespace
+        )
+        .clipShape(
+            RoundedRectangle(
+                cornerRadius: 32,
+                style: .continuous
+            )
         )
         .glassEffect(
             .clear,
@@ -113,40 +118,74 @@ struct ImportButton: View {
                 cornerRadius: 32,
                 style: .continuous
             )
+
         )
     }
 
-    private func saveImport() {
-        guard let audioURL = importSession.audioURL else {
-            return
-        }
+    private func handleSource(_ source: ImportSource) {
+        switch source {
+        case .photos:
+            showPhotosPicker = true
 
-        let clip = RecitationClip(audioFilename: audioURL.lastPathComponent)
+            DispatchQueue.main.asyncAfter(
+                deadline: .now() + 0.35
+            ) {
+                withAnimation(.bouncy) {
+                    isExpanded.toggle()
+                }
+            }
+        case .url:
+            showURLAlert = true
 
-        modelContext.insert(clip)
-
-        for match in importSession.matches {
-            let verse = Verse(
-                surah: match.surah,
-                ayah: match.ayah,
-                confidence: match.confidence,
-                text: match.text,
-                clip: clip
-            )
-
-            modelContext.insert(verse)
-        }
-
-        do {
-            try modelContext.save()
-
-            importSession.reset()
-            showingImportSheet = false
-            selectedItem = nil
-        } catch {
-            importSession.state = .failed
-            importSession.errorMessage = "We couldn't save this recitation."
+            withAnimation(.bouncy) {
+                isExpanded.toggle()
+            }
         }
     }
 
+    private func startImport(input: ImportInput) {
+        playbackController.stop()
+
+        importSession.reset()
+        importSession.state = .extractingAudio
+        importSession.message = "Preparing your recitation..."
+
+        showImportSheet = true
+
+        Task {
+            do {
+                try await processor.process(
+                    input: input,
+                    session: importSession
+                )
+            } catch {
+                importSession.state = .failed
+                importSession.errorMessage =
+                    "We couldn't process this recitation. Please try another source."
+            }
+        }
+    }
+
+    private func saveImport() {
+        do {
+            try processor.saveImport(
+                importSession,
+                modelContext
+            )
+
+            showImportSheet.toggle()
+        } catch {
+            importSession.state = .failed
+            importSession.errorMessage =
+                "We couldn't save this recitation."
+        }
+    }
+
+    private var isValidURL: Bool {
+        guard let url = URL(string: inputURL) else {
+            return false
+        }
+
+        return url.scheme == "https" && url.host != nil
+    }
 }

@@ -4,10 +4,7 @@ struct ImportMenu: View {
     let action: (ImportSource) -> Void
 
     var body: some View {
-        VStack(
-            alignment: .leading,
-            spacing: 10
-        ) {
+        VStack(alignment: .leading, spacing: 10) {
             Button {
                 action(.photos)
             } label: {
@@ -17,11 +14,18 @@ struct ImportMenu: View {
                 )
                 .padding([.horizontal, .vertical], 10)
             }
+
+            Button {
+                action(.url)
+            } label: {
+                Label(
+                    "URL",
+                    systemImage: "link"
+                )
+                .padding([.horizontal, .vertical], 10)
+            }
         }
         .foregroundStyle(Colors.foreground)
         .padding()
     }
-}
-enum ImportSource {
-    case photos
 }

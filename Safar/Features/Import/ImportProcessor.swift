@@ -3,6 +3,16 @@ import PhotosUI
 import SwiftData
 import SwiftUI
 
+enum ImportSource {
+    case photos
+    case url
+}
+
+enum ImportInput {
+    case photosVideo(PhotosPickerItem)
+    case url(URL)
+}
+
 final class ImportProcessor {
     private let assetManager: AssetManager
     private let runtime: RecognitionRuntime
@@ -15,10 +25,55 @@ final class ImportProcessor {
         self.runtime = runtime
     }
 
-    func processVideo(
-        item: PhotosPickerItem,
-        modelContext: ModelContext,
+    func process(
+        input: ImportInput,
         session: ImportSession
+    ) async throws {
+        switch input {
+        case .photosVideo(let item):
+            try await processPhotosVideo(
+                item: item,
+                session: session
+            )
+        case .url(let url):
+            try await processURL(
+                url: url,
+                session: session
+            )
+        }
+    }
+
+    func saveImport(
+        _ session: ImportSession,
+        _ modelContext: ModelContext
+    ) throws {
+        guard let audioURL = session.audioURL else {
+            throw ImportProcessorError.missingAudio
+        }
+
+        let clip = RecitationClip(audioFilename: audioURL.lastPathComponent)
+
+        modelContext.insert(clip)
+
+        for match in session.matches {
+            let verse = Verse(
+                surah: match.surah,
+                ayah: match.ayah,
+                confidence: match.confidence,
+                text: match.text,
+                clip: clip
+            )
+
+            modelContext.insert(verse)
+        }
+
+        try modelContext.save()
+        session.reset()
+    }
+
+    private func processPhotosVideo(
+        item: PhotosPickerItem,
+        session: ImportSession,
     ) async throws {
         session.update(
             state: .extractingAudio,
@@ -66,7 +121,7 @@ final class ImportProcessor {
             message: "Finding verses in your recitation..."
         )
 
-        let matches = await runtime.identifyVerses(
+        let matches = try await runtime.identifyVerses(
             from: wavURL
         )
 
@@ -83,6 +138,14 @@ final class ImportProcessor {
             progress: 1,
             message: "Your recitation is ready"
         )
+    }
+
+    private func processURL(
+        url: URL,
+        session: ImportSession
+    ) async throws {
+        // download video/audio
+        // pass through the same pipeline
     }
 
     private func createTemporaryVideoURL(
@@ -108,5 +171,6 @@ final class ImportProcessor {
 }
 
 enum ImportProcessorError: Error {
+    case missingAudio
     case videoLoadFailed
 }

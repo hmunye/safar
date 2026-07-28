@@ -12,23 +12,14 @@ final class AssetManager {
     ) {
         self.storageDirectory = storageURL
 
-        try? FileManager.default.createDirectory(
-            at: storageDirectory,
-            withIntermediateDirectories: true
-        )
-    }
-
-    func filename(
-        from url: URL
-    ) -> String {
-        url.lastPathComponent
-    }
-
-    func url(
-        for filename: String
-    ) -> URL {
-        storageDirectory
-            .appending(path: filename)
+        do {
+            try FileManager.default.createDirectory(
+                at: storageDirectory,
+                withIntermediateDirectories: true
+            )
+        } catch {
+            fatalError("failed to create asset directory: \(error)")
+        }
     }
 
     func saveAudio(from audioURL: URL) async throws -> URL {
@@ -37,8 +28,6 @@ final class AssetManager {
         let destinationURL =
             storageDirectory
             .appending(path: "clip-\(UUID().uuidString).m4a")
-
-        try? FileManager.default.removeItem(at: destinationURL)
 
         guard
             let exportSession = AVAssetExportSession(
@@ -54,6 +43,11 @@ final class AssetManager {
                 to: destinationURL,
                 as: .m4a
             )
+
+            guard FileManager.default.fileExists(atPath: destinationURL.path)
+            else {
+                throw AssetError.exportFailed("file could not be created")
+            }
 
             return destinationURL
 
@@ -78,6 +72,19 @@ final class AssetManager {
                 error.localizedDescription
             )
         }
+    }
+
+    func filename(
+        from url: URL
+    ) -> String {
+        url.lastPathComponent
+    }
+
+    func url(
+        for filename: String
+    ) -> URL {
+        storageDirectory
+            .appending(path: filename)
     }
 }
 

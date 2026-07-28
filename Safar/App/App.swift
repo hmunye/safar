@@ -5,10 +5,10 @@ import SwiftUI
 @main
 struct SafarApp: App {
     init() {
-        let session = AVAudioSession.sharedInstance()
-
-        try? session.setCategory(.playback, mode: .default)
-        try? session.setActive(true)
+        try? AVAudioSession.sharedInstance().setCategory(
+            .playback,
+            mode: .default
+        )
     }
 
     var body: some Scene {
@@ -16,10 +16,7 @@ struct SafarApp: App {
             RootView()
         }
         .modelContainer(
-            for: [
-                RecitationClip.self,
-                Verse.self,
-            ]
+            for: [RecitationClip.self, Verse.self]
         )
     }
 }

@@ -14,8 +14,12 @@ actor RecognitionRuntime {
 
     func identifyVerses(
         from audioURL: URL
-    ) async -> [VerseMatch] {
-        initializeOnce()
+    ) async throws -> [VerseMatch] {
+        try initializeOnce()
+
+        guard recognizer != nil else {
+            throw RecognitionError.notInitialized
+        }
 
         let path = std.string(audioURL.path)
         let matches = recognizer!.identify_verses(path)
@@ -30,7 +34,7 @@ actor RecognitionRuntime {
         }
     }
 
-    private func initializeOnce() {
+    private func initializeOnce() throws {
         guard self.recognizer == nil else { return }
 
         guard
@@ -39,11 +43,16 @@ actor RecognitionRuntime {
                 withExtension: "bin"
             )
         else {
-            fatalError("Missing ASR model")
+            throw RecognitionError.missingModel
         }
 
         self.recognizer = safar.RecitationIdentifier(
             std.string(modelURL.path)
         )
     }
+}
+
+enum RecognitionError: Error {
+    case notInitialized
+    case missingModel
 }

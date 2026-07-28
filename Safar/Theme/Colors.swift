@@ -39,13 +39,18 @@ extension Color {
 
 enum Colors {
     static let background = Color(
-        light: "#2B2A27",
-        dark: "#2B2A27"
+        light: "#1B1B1E",
+        dark: "#1B1B1E"
     )
 
     static let foreground = Color(
         light: "#F4F3EE",
         dark: "#F4F3EE"
+    )
+
+    static let secondary = Color(
+        light: "#2B2A27",
+        dark: "#2B2A27"
     )
 
     static let accent = Color(

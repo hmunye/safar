@@ -44,6 +44,10 @@ enum AudioConverter {
         )
 
         let wavFile = try FileHandle(forWritingTo: wavURL)
+        defer {
+            try? wavFile.close()
+        }
+
         try writeWavHeader(
             to: wavFile,
             sampleRate: 16_000,
@@ -115,8 +119,6 @@ enum AudioConverter {
             bitsPerSample: 16,
             dataSize: pcmBytesWritten
         )
-
-        try wavFile.close()
 
         return wavURL
     }

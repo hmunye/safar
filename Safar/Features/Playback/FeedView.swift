@@ -2,13 +2,19 @@ import SwiftData
 import SwiftUI
 
 struct FeedView: View {
+    @State private var activeClipID: UUID?
+
     @Query(
         sort: \RecitationClip.createdAt,
-        order: .reverse
     )
     private var clips: [RecitationClip]
 
-    @State private var playbackController = PlaybackController()
+    private let playbackController: PlaybackController
+    private let assetManager = AssetManager()
+
+    init(playbackController: PlaybackController) {
+        self.playbackController = playbackController
+    }
 
     var body: some View {
         if clips.isEmpty {
@@ -16,24 +22,67 @@ struct FeedView: View {
                 "No Recitations",
                 systemImage: "waveform",
                 description: Text("Import a clip to get started")
-                    .font(.caption)
-                    .foregroundStyle(.secondary),
             )
-            .scaleEffect(1.2)
-            .foregroundStyle(Colors.foreground)
         } else {
-            ScrollView(.vertical) {
-                LazyVStack {
-                    ForEach(clips) { clip in
-                        CardView(
-                            clip: clip,
-                            playbackController: playbackController
-                        )
+            GeometryReader { proxy in
+                ScrollView(.vertical) {
+                    LazyVStack(spacing: 0) {
+                        ForEach(clips) { clip in
+                            CardView(
+                                clip: clip,
+                                playbackController: playbackController
+                            )
+                            .frame(
+                                width: proxy.size.width,
+                                height: proxy.size.height
+                            )
+                            .id(clip.id)
+                        }
                     }
+                    .scrollTargetLayout()
                 }
+                .scrollPosition(id: $activeClipID)
+                .scrollTargetBehavior(.paging)
+                .scrollIndicators(.hidden)
             }
-            .scrollTargetBehavior(.paging)
-            .scrollIndicators(.hidden)
+            .overlay(alignment: .bottom) {
+                VStack {
+                    Spacer()
+
+                    AudioScrubber(
+                        playerController: playbackController
+                    )
+                    .padding(.bottom, 24)
+                }
+                .frame(height: 40)
+                .contentShape(Rectangle())
+            }
+            .animation(.smooth, value: activeClipID)
+            .onAppear {
+                activeClipID = clips.first?.id
+            }
+            .onChange(of: activeClipID) { _, newID in
+                playActiveClip(newID)
+            }
+        }
+    }
+
+    private func playActiveClip(_ id: UUID?) {
+        guard
+            let id,
+            let clip = clips.first(where: {
+                $0.id == id
+            })
+        else {
+            return
+        }
+
+        let url = assetManager.url(for: clip.audioFilename)
+
+        do {
+            try playbackController.load(url: url, autoplay: true)
+        } catch {
+            print("failed to load audio clip:", error)
         }
     }
 }
