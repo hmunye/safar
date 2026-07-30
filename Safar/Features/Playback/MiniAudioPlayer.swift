@@ -45,8 +45,7 @@ struct MiniAudioPlayer: View {
                     .font(.caption.monospacedDigit())
                     .foregroundStyle(.secondary)
             }
-            .padding(.horizontal, 16)
-            .padding([.top, .bottom], 14)
+            .padding()
 
             AudioScrubber(playerController: player, showTime: false)
         }
@@ -56,16 +55,10 @@ struct MiniAudioPlayer: View {
                 style: .continuous
             )
             .fill(.clear)
-            .overlay {
-                RoundedRectangle(
-                    cornerRadius: 22,
-                    style: .continuous
-                )
-                .stroke(
-                    Colors.foreground.opacity(0.12),
-                    lineWidth: 1
-                )
-            }
+            .stroke(
+                Colors.foreground.opacity(0.12),
+                lineWidth: 1
+            )
         }
     }
 

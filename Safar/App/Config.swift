@@ -1,30 +1,6 @@
-import AVFoundation
-import SwiftData
 import SwiftUI
-import UIKit
 
-@main
-struct SafarApp: App {
-    init() {
-        UITextField.appearance().tintColor = UIColor(Colors.accent)
-
-        try? AVAudioSession.sharedInstance().setCategory(
-            .playback,
-            mode: .default
-        )
-    }
-
-    var body: some Scene {
-        WindowGroup {
-            RootView()
-        }
-        .modelContainer(
-            for: [RecitationClip.self, Verse.self]
-        )
-    }
-}
-
-enum AppConfig {
+enum Config {
     static var serverIP: String? {
         value(for: "ServerIP")
     }

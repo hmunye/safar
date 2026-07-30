@@ -1,7 +1,7 @@
 # safar
 
-An iOS application for capturing Quran recitation clips on-device, with offline
-processing to identify verses from audio, played back in a scrollable feed.
+An iOS application for transcribing Quran recitation clips on-device, with offline
+processing to identify verses, played back in a scrollable feed.
 
 ## Setup
 

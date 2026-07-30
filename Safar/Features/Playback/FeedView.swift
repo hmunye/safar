@@ -4,9 +4,7 @@ import SwiftUI
 struct FeedView: View {
     @State private var activeClipID: UUID?
 
-    @Query(
-        sort: \RecitationClip.createdAt,
-    )
+    @Query
     private var clips: [RecitationClip]
 
     private let playbackController: PlaybackController
@@ -32,11 +30,11 @@ struct FeedView: View {
                                 clip: clip,
                                 playbackController: playbackController
                             )
+                            .id(clip.id)
                             .frame(
                                 width: proxy.size.width,
                                 height: proxy.size.height
                             )
-                            .id(clip.id)
                         }
                     }
                     .scrollTargetLayout()

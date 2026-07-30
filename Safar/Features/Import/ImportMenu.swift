@@ -5,7 +5,7 @@ struct ImportMenu: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Button {
+            Button(role: .confirm) {
                 action(.photos)
             } label: {
                 Label(
@@ -15,8 +15,8 @@ struct ImportMenu: View {
                 .padding([.horizontal, .vertical], 10)
             }
 
-            if AppConfig.isURLImportEnabled {
-                Button {
+            if Config.isURLImportEnabled {
+                Button(role: .confirm) {
                     action(.url)
                 } label: {
                     Label(

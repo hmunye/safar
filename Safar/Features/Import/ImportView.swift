@@ -59,7 +59,10 @@ struct ImportView: View {
                 .foregroundStyle(Colors.foreground)
                 .textInputAutocapitalization(.never)
 
-            Button("Import") {
+            Button("Import", role: .confirm) {
+                UIImpactFeedbackGenerator(style: .light)
+                    .impactOccurred()
+
                 guard let url = URL(string: inputURL) else {
                     return
                 }
@@ -67,13 +70,16 @@ struct ImportView: View {
                 inputURL.removeAll()
                 startImport(.url(url))
             }
-            .foregroundStyle(Colors.foreground)
             .disabled(
                 URL(string: inputURL)?.scheme != "https"
                     || URL(string: inputURL)?.host == nil
             )
+            .foregroundStyle(Colors.foreground)
 
             Button("Cancel", role: .cancel) {
+                UIImpactFeedbackGenerator(style: .light)
+                    .impactOccurred()
+
                 inputURL.removeAll()
             }
             .foregroundStyle(Colors.foreground)
@@ -93,7 +99,7 @@ struct ImportView: View {
                     } catch {
                         importSession.state = .error
                         importSession.errorMessage =
-                            "We couldn't save this recording. Please import it again or choose a different source."
+                            "We couldn't save this recording. Please import again or choose a different source."
                     }
                 },
                 onCancel: {
@@ -153,7 +159,7 @@ struct ImportView: View {
                 }
             }
         case .url:
-            guard AppConfig.isURLImportEnabled else {
+            guard Config.isURLImportEnabled else {
                 return
             }
 
@@ -181,7 +187,9 @@ struct ImportView: View {
                     session: importSession
                 )
             } catch is CancellationError {
-                return
+                importSession.state = .error
+                importSession.errorMessage =
+                    "The import was interrupted unexpectedly. Please try again."
             } catch {
                 importSession.state = .error
                 importSession.errorMessage =

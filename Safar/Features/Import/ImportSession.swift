@@ -24,10 +24,7 @@ final class ImportSession {
     ) {
         self.state = state
         self.progress = progress
-
-        if !message.isEmpty {
-            self.message = message
-        }
+        self.message = message
     }
 
     @MainActor
@@ -35,7 +32,7 @@ final class ImportSession {
         state: State,
         progress: Double,
         message: String = "",
-        delay: UInt64 = 600_000_000
+        delay: UInt64 = 650_000_000
     ) async {
         self.update(state: state, progress: progress, message: message)
 

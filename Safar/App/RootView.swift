@@ -53,7 +53,7 @@ struct RootView: View {
 }
 
 private struct DotGrid: View {
-    private let spacing: CGFloat = 29.7
+    private let spacing: CGFloat = 26.7
     private let dotSize: CGFloat = 2
 
     var body: some View {
