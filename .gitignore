@@ -16,5 +16,6 @@ Safar/Resources/Models/*
 !Safar/Resources/Models/.gitignore
 Safar/Config/*
 !Safar/Config/.gitignore
+!Safar/Config/Config.xcconfig
 
 server.py

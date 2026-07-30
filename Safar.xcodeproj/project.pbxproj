@@ -22,6 +22,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Config/.gitignore,
+				Config/Config.xcconfig,
 				Info.plist,
 				Resources/Models/.gitignore,
 			);
