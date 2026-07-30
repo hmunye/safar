@@ -153,6 +153,10 @@ struct ImportView: View {
                 }
             }
         case .url:
+            guard AppConfig.isURLImportEnabled else {
+                return
+            }
+
             showURLAlert = true
 
             withAnimation(.bouncy) {

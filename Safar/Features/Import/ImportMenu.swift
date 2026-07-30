@@ -15,14 +15,16 @@ struct ImportMenu: View {
                 .padding([.horizontal, .vertical], 10)
             }
 
-            Button {
-                action(.url)
-            } label: {
-                Label(
-                    "URL",
-                    systemImage: "link"
-                )
-                .padding([.horizontal, .vertical], 10)
+            if AppConfig.isURLImportEnabled {
+                Button {
+                    action(.url)
+                } label: {
+                    Label(
+                        "URL",
+                        systemImage: "link"
+                    )
+                    .padding([.horizontal, .vertical], 10)
+                }
             }
         }
         .foregroundStyle(Colors.foreground)

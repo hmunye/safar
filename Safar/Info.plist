@@ -7,10 +7,10 @@
 		<string>audio</string>
 	</array>
 
-    <key>SERVER_IP</key>
-    <string>$(SERVER_IP)</string>
+	<key>ServerIP</key>
+	<string>$(SERVER_IP)</string>
 
-    <key>SERVER_PORT</key>
-    <string>$(SERVER_PORT)</string>
+	<key>ServerPort</key>
+	<string>$(SERVER_PORT)</string>
 </dict>
 </plist>

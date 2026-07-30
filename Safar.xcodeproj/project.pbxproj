@@ -21,6 +21,7 @@
 		864EA082301069D800F856D5 /* Exceptions for "Safar" folder in "Safar" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Config/.gitignore,
 				Info.plist,
 				Resources/Models/.gitignore,
 			);
@@ -160,6 +161,8 @@
 /* Begin XCBuildConfiguration section */
 		861B6F2230071E4600F0135A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 861B6F1B30071E4500F0135A /* Safar */;
+			baseConfigurationReferenceRelativePath = Config/Debug.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -224,6 +227,8 @@
 		};
 		861B6F2330071E4600F0135A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 861B6F1B30071E4500F0135A /* Safar */;
+			baseConfigurationReferenceRelativePath = Config/Release.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
