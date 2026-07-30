@@ -97,4 +97,3 @@ struct CardView: View {
         .foregroundStyle(Colors.foreground)
     }
 }
-

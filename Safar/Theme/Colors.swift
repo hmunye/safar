@@ -57,4 +57,9 @@ enum Colors {
         light: "#5F8C5A",
         dark: "#5F8C5A",
     )
+
+    static let destructive = Color(
+        light: "#96031A",
+        dark: "#96031A"
+    )
 }

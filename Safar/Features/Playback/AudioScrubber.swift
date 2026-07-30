@@ -6,6 +6,7 @@ struct AudioScrubber: View {
     @State private var wasPlayingBeforeScrub = false
 
     let playerController: PlaybackController
+    let showTime: Bool
 
     private var playbackProgress: Double {
         guard playerController.duration > 0 else {
@@ -40,7 +41,7 @@ struct AudioScrubber: View {
                 height: isScrubbing ? 8 : 3
             )
             .overlay(alignment: .top) {
-                if isScrubbing {
+                if isScrubbing && showTime {
                     Text(
                         "\(timeString(scrubTime)) / \(timeString(playerController.duration))"
                     )
@@ -58,7 +59,7 @@ struct AudioScrubber: View {
                 DragGesture(minimumDistance: 0)
                     .onChanged { value in
                         if !isScrubbing {
-                            isScrubbing.toggle()
+                            isScrubbing = true
                             scrubTime = playerController.currentTime
                             wasPlayingBeforeScrub = playerController.isPlaying
 
@@ -80,13 +81,13 @@ struct AudioScrubber: View {
                     .onEnded { _ in
                         playerController.seek(to: scrubTime)
 
-                        isScrubbing.toggle()
+                        isScrubbing = false
 
                         if wasPlayingBeforeScrub {
                             playerController.togglePlayback()
                         }
 
-                        wasPlayingBeforeScrub.toggle()
+                        wasPlayingBeforeScrub = false
                     }
             )
         }

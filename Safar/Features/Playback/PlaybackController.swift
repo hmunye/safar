@@ -62,7 +62,7 @@ final class PlaybackController: NSObject {
 
         currentTime = 0
         duration = 0
-        isPlaying.toggle()
+        isPlaying = false
 
         // try? AVAudioSession.sharedInstance().setActive(false)
     }
@@ -81,7 +81,7 @@ final class PlaybackController: NSObject {
 
         player.play()
 
-        isPlaying.toggle()
+        isPlaying = true
         startTimer()
     }
 
@@ -90,7 +90,7 @@ final class PlaybackController: NSObject {
 
         stopTimer()
 
-        isPlaying.toggle()
+        isPlaying = false
 
         // try? AVAudioSession.sharedInstance().setActive(false)
     }

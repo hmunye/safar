@@ -14,3 +14,7 @@ XCFramework/*
 
 Safar/Resources/Models/*
 !Safar/Resources/Models/.gitignore
+Safar/Config/*
+!Safar/Config/.gitignore
+
+server.py

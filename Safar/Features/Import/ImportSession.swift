@@ -4,35 +4,51 @@ import Foundation
 final class ImportSession {
     enum State: Int, Equatable {
         case idle
-        case extractingAudio
-        case recognizing
+        case processing
         case preview
-        case failed
+        case error
     }
 
     var state: State = .idle
     var message = ""
-    var progress: Double = 0
-    var audioURL: URL?
+    var errorMessage = ""
     var matches: [VerseMatch] = []
-    var errorMessage: String?
+    var audioURL: URL?
+    var progress: Double = 0
 
+    @MainActor
     func update(
         state: State,
         progress: Double,
-        message: String
+        message: String = ""
     ) {
         self.state = state
         self.progress = progress
-        self.message = message
+
+        if !message.isEmpty {
+            self.message = message
+        }
     }
 
+    @MainActor
+    func updateWithDelay(
+        state: State,
+        progress: Double,
+        message: String = "",
+        delay: UInt64 = 600_000_000
+    ) async {
+        self.update(state: state, progress: progress, message: message)
+
+        try? await Task.sleep(nanoseconds: delay)
+    }
+
+    @MainActor
     func reset() {
         state = .idle
-        message = ""
-        progress = 0
-        audioURL = nil
+        message.removeAll()
+        errorMessage.removeAll()
         matches.removeAll()
-        errorMessage = nil
+        audioURL = nil
+        progress = 0
     }
 }

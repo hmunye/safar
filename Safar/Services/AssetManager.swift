@@ -62,7 +62,7 @@ final class AssetManager {
 
     func deleteAudio(at audioURL: URL) throws {
         guard FileManager.default.fileExists(atPath: audioURL.path) else {
-            throw AssetError.audioNotFound
+            return
         }
 
         do {
@@ -92,6 +92,5 @@ enum AssetError: Error {
     case exportSessionFailed
     case exportFailed(String)
     case cancelled
-    case audioNotFound
     case deletionFailed(String)
 }

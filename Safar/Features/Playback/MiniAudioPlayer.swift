@@ -46,11 +46,9 @@ struct MiniAudioPlayer: View {
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 16)
-            .padding(.top, 14)
-            .padding(.bottom, 10)
+            .padding([.top, .bottom], 14)
 
-            AudioScrubber(playerController: player)
-                .padding(.bottom, 14)
+            AudioScrubber(playerController: player, showTime: false)
         }
         .background {
             RoundedRectangle(
@@ -58,13 +56,17 @@ struct MiniAudioPlayer: View {
                 style: .continuous
             )
             .fill(.clear)
-            .glassEffect()
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 22,
+                    style: .continuous
+                )
+                .stroke(
+                    Colors.foreground.opacity(0.12),
+                    lineWidth: 1
+                )
+            }
         }
-        .shadow(
-            color: .black.opacity(0.08),
-            radius: 12,
-            y: 4
-        )
     }
 
     private var timeString: String {

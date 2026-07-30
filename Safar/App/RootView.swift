@@ -1,30 +1,34 @@
 import SwiftUI
 
 struct RootView: View {
-    @State private var importExpanded = false
     @State private var playbackController = PlaybackController()
+    @State private var importExpanded = false
 
     var body: some View {
         ZStack {
             Colors.background
                 .ignoresSafeArea()
 
-            FeedView(
-                playbackController: playbackController
-            )
+            // DotGrid()
+            //  .ignoresSafeArea()
+
+            FeedView(playbackController: playbackController)
 
             if importExpanded {
                 Color.clear
                     .ignoresSafeArea()
                     .contentShape(Rectangle())
                     .onTapGesture {
+                        UIImpactFeedbackGenerator(style: .light)
+                            .impactOccurred()
+
                         withAnimation(.bouncy) {
-                            importExpanded.toggle()
+                            importExpanded = false
                         }
                     }
             }
 
-            SettingsButton()
+            SettingsView()
                 .padding(.leading, 30)
                 .padding(.top, 20)
                 .frame(
@@ -33,8 +37,8 @@ struct RootView: View {
                     alignment: .topLeading
                 )
 
-            ImportButton(
-                isExpanded: $importExpanded,
+            ImportView(
+                expanded: $importExpanded,
                 playbackController: playbackController
             )
             .padding(.trailing, 30)

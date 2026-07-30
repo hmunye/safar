@@ -45,12 +45,14 @@ struct FeedView: View {
                 .scrollTargetBehavior(.paging)
                 .scrollIndicators(.hidden)
             }
+            .ignoresSafeArea(.keyboard)
             .overlay(alignment: .bottom) {
                 VStack {
                     Spacer()
 
                     AudioScrubber(
-                        playerController: playbackController
+                        playerController: playbackController,
+                        showTime: true
                     )
                     .padding(.bottom, 24)
                 }
