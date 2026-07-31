@@ -2,6 +2,7 @@ import SwiftUI
 
 struct CardView: View {
     @State private var playbackIndicator: String?
+    @State private var activeVerseID: UUID?
 
     let clip: RecitationClip
     let playbackController: PlaybackController
@@ -27,22 +28,28 @@ struct CardView: View {
                             showSurah: index == 0
                         )
                         .frame(width: proxy.size.width)
+                        .scaleEffect(x: -1)
+                        .id(verse.id)
                     }
                 }
                 .scrollTargetLayout()
             }
             .scrollTargetBehavior(.paging)
+            .scrollPosition(id: $activeVerseID)
             .scrollIndicators(.hidden)
+            .scaleEffect(x: -1)
             .overlay {
                 if let playbackIndicator {
                     Image(systemName: playbackIndicator)
                         .font(.system(size: 54, weight: .semibold))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Colors.foreground)
                         .shadow(radius: 8)
-                        .transition(
-                            .scale.combined(with: .opacity)
-                        )
+                        .transition(.scale.combined(with: .opacity))
                 }
+            }
+            .overlay(alignment: .bottom) {
+                pageIndicator
+                    .padding(.bottom, 100)
             }
             .contentShape(Rectangle())
             .onTapGesture {
@@ -61,7 +68,28 @@ struct CardView: View {
                     }
                 }
             }
+            .onAppear {
+                if activeVerseID == nil {
+                    activeVerseID = orderedVerses.first?.element.id
+                }
+            }
         }
+    }
+
+    @ViewBuilder
+    private var pageIndicator: some View {
+        HStack(spacing: 6) {
+            ForEach(orderedVerses, id: \.element.id) { _, verse in
+                Circle()
+                    .fill(
+                        verse.id == activeVerseID
+                            ? Colors.foreground
+                            : Colors.foreground.opacity(0.2)
+                    )
+                    .frame(width: 6, height: 6)
+            }
+        }
+        .scaleEffect(x: -1)
     }
 
     private func verseView(
@@ -87,15 +115,14 @@ struct CardView: View {
                 .foregroundStyle(.secondary)
 
             Text(verse.text)
-                .font(.system(size: 38))
-                .lineSpacing(12)
+                .font(.system(size: 42, weight: .regular))
+                .lineSpacing(16)
                 .multilineTextAlignment(.trailing)
 
             Text(verse.translation)
-                .font(.system(size: 24))
-                .fontDesign(.rounded)
+                .font(.system(size: 22))
                 .foregroundStyle(.secondary)
-                .lineSpacing(12)
+                .lineSpacing(10)
                 .multilineTextAlignment(.leading)
 
             Spacer()

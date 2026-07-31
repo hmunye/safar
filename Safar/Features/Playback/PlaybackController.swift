@@ -3,7 +3,7 @@ import AVFoundation
 @Observable
 final class PlaybackController: NSObject {
     private var player: AVAudioPlayer?
-    private var timer: Timer?
+    private var timerTask: Task<Void, Never>?
     private var loadedURL: URL?
 
     private(set) var isPlaying = false
@@ -101,21 +101,24 @@ final class PlaybackController: NSObject {
     private func startTimer() {
         stopTimer()
 
-        timer = .scheduledTimer(
-            withTimeInterval: 0.05,
-            repeats: true
-        ) { [weak self] _ in
-            guard let self else {
-                return
-            }
+        timerTask = Task { [weak self] in
+            while !Task.isCancelled {
+                guard let self else {
+                    return
+                }
 
-            currentTime = player?.currentTime ?? 0
+                currentTime = player?.currentTime ?? 0
+
+                try? await Task.sleep(
+                    nanoseconds: 100_000_000
+                )
+            }
         }
     }
 
     private func stopTimer() {
-        timer?.invalidate()
-        timer = nil
+        timerTask?.cancel()
+        timerTask = nil
     }
 }
 

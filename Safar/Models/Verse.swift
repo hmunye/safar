@@ -3,6 +3,9 @@ import SwiftData
 
 @Model
 class Verse {
+    @Attribute(.unique)
+    var id = UUID()
+
     var surah: UInt16
     var ayah: UInt16
     var confidence: Float32

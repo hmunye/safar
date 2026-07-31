@@ -49,7 +49,7 @@ struct FeedView: View {
                                 .onAppear {
                                     if clip.id == clips.last?.id {
                                         Task {
-                                            await loadMoreClips()
+                                            await loadMoreClips(shuffle: false)
                                         }
                                     }
                                 }
@@ -87,11 +87,20 @@ struct FeedView: View {
                         activeClipID = clips.first?.id
                     }
                 }
-                .onChange(of: activeClipID) { _, newID in
+                .onChange(of: activeClipID) { _, id in
                     Task {
-                        await playActiveClip(newID)
+                        await playActiveClip(id)
                     }
                 }
+            }
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: .recitationImported
+            )
+        ) { _ in
+            Task { @MainActor in
+                await refreshFeed()
             }
         }
         .task {
@@ -101,7 +110,9 @@ struct FeedView: View {
         }
     }
 
-    private func loadMoreClips() async {
+    private func loadMoreClips(
+        shuffle: Bool = true
+    ) async {
         guard !isLoading else {
             return
         }
@@ -111,8 +122,7 @@ struct FeedView: View {
         var descriptor = FetchDescriptor<RecitationClip>(
             sortBy: [
                 SortDescriptor(
-                    \.createdAt,
-                    order: .reverse
+                    \.createdAt
                 )
             ]
         )
@@ -122,7 +132,8 @@ struct FeedView: View {
 
         do {
             var newClips = try modelContext.fetch(descriptor)
-            if offset == 0 {
+
+            if shuffle && offset == 0 {
                 newClips.shuffle()
             }
 
@@ -133,6 +144,24 @@ struct FeedView: View {
         }
 
         isLoading = false
+    }
+
+    private func refreshFeed(shuffle: Bool = false) async {
+        let previousActiveID = activeClipID
+
+        clips.removeAll()
+        offset = 0
+
+        await loadMoreClips(shuffle: shuffle)
+
+        if let previousActiveID,
+            clips.contains(where: { $0.id == previousActiveID })
+        {
+            activeClipID = previousActiveID
+        } else {
+            playbackController.stop()
+            activeClipID = clips.first?.id
+        }
     }
 
     private func playActiveClip(_ id: UUID?) async {
@@ -194,24 +223,6 @@ struct FeedView: View {
             } else {
                 activeClipID = clips.last?.id
             }
-        }
-    }
-
-    private func refreshFeed() async {
-        let previousActiveID = activeClipID
-
-        clips.removeAll()
-        offset = 0
-
-        await loadMoreClips()
-
-        if let previousActiveID,
-            clips.contains(where: { $0.id == previousActiveID })
-        {
-            activeClipID = previousActiveID
-        } else {
-            playbackController.stop()
-            activeClipID = clips.first?.id
         }
     }
 }

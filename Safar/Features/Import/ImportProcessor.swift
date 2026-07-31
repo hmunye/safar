@@ -67,6 +67,11 @@ final class ImportProcessor {
 
             throw error
         }
+
+        NotificationCenter.default.post(
+            name: .recitationImported,
+            object: nil
+        )
     }
 
     func discardImport(session: ImportSession) {

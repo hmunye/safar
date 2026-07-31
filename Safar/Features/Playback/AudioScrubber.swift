@@ -104,8 +104,8 @@ struct AudioScrubber: View {
                     }
             )
         }
-        .frame(height: 24)
         .padding(.horizontal, 20)
+        .frame(height: 24)
     }
 
     private func timeString(
