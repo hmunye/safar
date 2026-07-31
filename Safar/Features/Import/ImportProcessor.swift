@@ -87,9 +87,20 @@ final class ImportProcessor {
             message: "Processing your video..."
         )
 
-        let videoURL = try await createTemporaryVideoURL(
-            from: .photosVideo(item)
-        )
+        let videoURL: URL
+
+        do {
+            videoURL = try await createTemporaryVideoURL(
+                from: .photosVideo(item)
+            )
+        } catch {
+            session.state = .error
+            session.errorMessage =
+                "We couldn't process this video. Please try again with a different source."
+
+            return
+        }
+
         defer {
             try? FileManager.default.removeItem(
                 at: videoURL
@@ -107,14 +118,70 @@ final class ImportProcessor {
             from: videoURL
         )
 
+        try await processAudio(
+            at: savedAudioURL,
+            session: session
+        )
+    }
+
+    private func processURL(
+        url: URL,
+        session: ImportSession
+    ) async throws {
+        try Task.checkCancellation()
+        await session.updateWithDelay(
+            state: .processing,
+            progress: 0.05,
+            message: "Fetching audio..."
+        )
+
+        let audioURL: URL
+
+        do {
+            audioURL = try await assetManager.fetchAudio(
+                from: url
+            )
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch AssetError.serverUnavailable {
+            session.state = .error
+            session.errorMessage =
+                "We couldn't fetch the audio. Is the server running?"
+
+            return
+        } catch AssetError.downloadFailed {
+            session.state = .error
+            session.errorMessage =
+                "We couldn't fetch the audio. Check the source and try again."
+
+            return
+        } catch {
+            session.state = .error
+            session.errorMessage =
+                "We couldn't fetch the audio. Please try again."
+
+            return
+        }
+        try await processAudio(
+            at: audioURL,
+            session: session
+        )
+    }
+
+    private func processAudio(
+        at audioURL: URL,
+        session: ImportSession
+    ) async throws {
         var keepAudio = false
         defer {
             if !keepAudio {
-                try? assetManager.deleteAudio(at: savedAudioURL)
+                try? assetManager.deleteAudio(
+                    at: audioURL
+                )
             }
         }
 
-        session.audioURL = savedAudioURL
+        session.audioURL = audioURL
 
         try Task.checkCancellation()
         await session.updateWithDelay(
@@ -126,7 +193,7 @@ final class ImportProcessor {
         let wavURL =
             try await AudioConverter
             .convertTo16kHzMonoPCM16WAV(
-                from: savedAudioURL
+                from: audioURL
             )
         defer {
             try? FileManager.default.removeItem(
@@ -150,9 +217,10 @@ final class ImportProcessor {
         if matches.isEmpty {
             session.errorMessage =
                 "We couldn't identify any verses. Please try again with a different recording."
+
             await session.updateWithDelay(
                 state: .error,
-                progress: 1,
+                progress: 1
             )
         } else {
             keepAudio = true
@@ -161,13 +229,9 @@ final class ImportProcessor {
             await session.updateWithDelay(
                 state: .preview,
                 progress: 1,
-                message: "Your verses are ready to review"
+                message: "Ready for review"
             )
         }
-    }
-
-    private func processURL(url: URL, session: ImportSession) async throws {
-        // TODO
     }
 
     private func createTemporaryVideoURL(

@@ -123,17 +123,23 @@ struct ProgressSheet: View {
                     .foregroundStyle(Colors.accent)
                     .frame(width: 40, height: 40)
 
-                Text("Passage Identified")
-                    .font(
-                        .system(
-                            .title2,
-                            design: .rounded,
-                            weight: .semibold
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Passage Identified")
+                        .font(
+                            .system(
+                                .title2,
+                                design: .rounded,
+                                weight: .semibold
+                            )
                         )
-                    )
-                    .foregroundStyle(Colors.foreground)
+                        .foregroundStyle(Colors.foreground)
+
+                    Text(session.message)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
             }
-            .padding(.top, 30)
+            .padding(.top, 35)
 
             if let audioURL = session.audioURL {
                 MiniAudioPlayer(
