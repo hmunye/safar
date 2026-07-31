@@ -81,10 +81,16 @@ class AudioHandler(BaseHTTPRequestHandler):
             self.send_error(500)
 
 
+def get_local_ip():
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+
+
 if __name__ == "__main__":
     PORT = 8080
 
-    print(f"listening: [http://{socket.gethostbyname(socket.gethostname())}:{PORT}]\n")
+    print(f"listening: [http://{get_local_ip()}:{PORT}]\n")
 
     ThreadingHTTPServer(
         ("0.0.0.0", PORT),

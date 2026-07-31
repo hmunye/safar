@@ -69,7 +69,7 @@ struct CardView: View {
         showSurah: Bool
     ) -> some View {
         VStack(
-            alignment: .leading,
+            alignment: .trailing,
             spacing: 24
         ) {
             Spacer()
@@ -89,7 +89,7 @@ struct CardView: View {
             Text(verse.text)
                 .font(.system(size: 38))
                 .lineSpacing(12)
-                .multilineTextAlignment(.leading)
+                .multilineTextAlignment(.trailing)
 
             Text(verse.translation)
                 .font(.system(size: 24))
