@@ -7,6 +7,7 @@ struct VerseMatch {
     let ayah: UInt16
     let confidence: Float32
     let text: String
+    let translation: String
 }
 
 actor RecognitionRuntime {
@@ -29,7 +30,8 @@ actor RecognitionRuntime {
                 surah: match.surah,
                 ayah: match.ayah,
                 confidence: match.confidence,
-                text: String(match.text)
+                text: String(match.text),
+                translation: String(match.translation)
             )
         }
     }

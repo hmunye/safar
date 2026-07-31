@@ -52,6 +52,7 @@ final class ImportProcessor {
                 ayah: match.ayah,
                 confidence: match.confidence,
                 text: match.text,
+                translation: match.translation,
                 clip: clip
             )
 

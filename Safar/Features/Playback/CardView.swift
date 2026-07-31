@@ -91,6 +91,12 @@ struct CardView: View {
                 .lineSpacing(12)
                 .multilineTextAlignment(.leading)
 
+            Text(verse.translation)
+                .font(.system(size: 30))
+                .foregroundStyle(.secondary)
+                .lineSpacing(12)
+                .multilineTextAlignment(.leading)
+
             Spacer()
         }
         .padding(.horizontal, 32)

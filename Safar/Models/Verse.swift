@@ -7,6 +7,7 @@ class Verse {
     var ayah: UInt16
     var confidence: Float32
     var text: String
+    var translation: String
 
     var clip: RecitationClip?
 
@@ -15,12 +16,14 @@ class Verse {
         ayah: UInt16,
         confidence: Float32,
         text: String,
+        translation: String,
         clip: RecitationClip? = nil
     ) {
         self.surah = surah
         self.ayah = ayah
         self.confidence = confidence
         self.text = text
+        self.translation = translation
         self.clip = clip
     }
 }

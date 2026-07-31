@@ -17,10 +17,11 @@ struct FeedView: View {
     var body: some View {
         if clips.isEmpty {
             ContentUnavailableView(
-                "No Recitations",
+                "No Recitations Yet",
                 systemImage: "waveform",
-                description: Text("Import a clip to get started")
+                description: Text("Import a recording to get started")
             )
+            .scaleEffect(1.2)
         } else {
             GeometryReader { proxy in
                 ScrollView(.vertical) {
