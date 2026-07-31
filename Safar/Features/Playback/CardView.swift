@@ -92,7 +92,8 @@ struct CardView: View {
                 .multilineTextAlignment(.leading)
 
             Text(verse.translation)
-                .font(.system(size: 30))
+                .font(.system(size: 24))
+                .fontDesign(.rounded)
                 .foregroundStyle(.secondary)
                 .lineSpacing(12)
                 .multilineTextAlignment(.leading)

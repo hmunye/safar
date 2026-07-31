@@ -45,9 +45,22 @@ struct AudioScrubber: View {
                     Text(
                         "\(timeString(scrubTime)) / \(timeString(playerController.duration))"
                     )
-                    .font(.caption.monospacedDigit())
+                    .font(.caption.monospacedDigit().bold())
                     .foregroundStyle(Colors.foreground)
-                    .offset(y: -28)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background {
+                        Capsule()
+                            .glassEffect(.clear)
+                    }
+                    .overlay {
+                        Capsule()
+                            .strokeBorder(
+                                .white.opacity(0.1),
+                                lineWidth: 0.5
+                            )
+                    }
+                    .offset(y: -40)
                 }
             }
             .animation(
