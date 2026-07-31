@@ -11,7 +11,7 @@ final class PlaybackController: NSObject {
 
     var currentTime: TimeInterval = 0
 
-    func load(url: URL, autoplay: Bool = false) throws {
+    func load(url: URL, autoplay: Bool = false) async throws {
         if loadedURL == url {
             if autoplay {
                 play()
@@ -21,14 +21,17 @@ final class PlaybackController: NSObject {
 
         stop()
 
-        let player = try AVAudioPlayer(contentsOf: url)
+        let newPlayer = try await Task.detached {
+            let player = try AVAudioPlayer(contentsOf: url)
+            player.prepareToPlay()
+            return player
+        }.value
 
-        player.delegate = self
-        player.prepareToPlay()
+        newPlayer.delegate = self
 
-        self.player = player
+        player = newPlayer
         loadedURL = url
-        duration = player.duration
+        duration = newPlayer.duration
         currentTime = 0
 
         if autoplay {

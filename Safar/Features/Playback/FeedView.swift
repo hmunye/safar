@@ -88,7 +88,9 @@ struct FeedView: View {
                     }
                 }
                 .onChange(of: activeClipID) { _, newID in
-                    playActiveClip(newID)
+                    Task {
+                        await playActiveClip(newID)
+                    }
                 }
             }
         }
@@ -133,7 +135,7 @@ struct FeedView: View {
         isLoading = false
     }
 
-    private func playActiveClip(_ id: UUID?) {
+    private func playActiveClip(_ id: UUID?) async {
         guard
             let id,
             let clip = clips.first(where: {
@@ -148,7 +150,7 @@ struct FeedView: View {
         )
 
         do {
-            try playbackController.load(
+            try await playbackController.load(
                 url: url,
                 autoplay: true
             )

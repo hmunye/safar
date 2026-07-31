@@ -152,10 +152,14 @@ struct ProgressSheet: View {
                         return
                     }
 
-                    do {
-                        try playbackController.load(url: audioURL)
-                    } catch {
-                        print("failed to load audio clip:", error)
+                    Task {
+                        do {
+                            try await playbackController.load(
+                                url: audioURL,
+                            )
+                        } catch {
+                            print("failed to load audio clip:", error)
+                        }
                     }
                 }
             }
