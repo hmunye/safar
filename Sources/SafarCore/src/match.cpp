@@ -264,7 +264,6 @@ std::vector<VerseMatch> match_transcription(const std::string& transcript) {
     std::vector<VerseMatch> verses;
 
     const auto normalized = normalize_text(transcript);
-    std::cout << "transcript (normalized): " << normalized << "\n";
 
     const auto match =
         substring_levenshtein_distance(normalized, safar::normalized_corpus);
@@ -292,6 +291,7 @@ std::vector<VerseMatch> match_transcription(const std::string& transcript) {
         if (c >= min_confidence) {
             verses.push_back({
                 .text = std::string(entry.text),
+                .translation = std::string(entry.translation),
                 .confidence = c,
                 .surah = entry.surah,
                 .ayah = entry.ayah,

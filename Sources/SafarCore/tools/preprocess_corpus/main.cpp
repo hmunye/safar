@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <optional>
@@ -18,9 +19,51 @@ struct Entry {
 struct Offset {
     std::size_t offset;
     std::size_t length;
-    std::uint16_t surah;
-    std::uint16_t ayah;
 };
+
+std::string escape_cpp(std::string_view s) {
+    std::string out;
+
+    for (char c : s) {
+        switch (c) {
+            case '\\':
+                out += "\\\\";
+                break;
+            case '"':
+                out += "\\\"";
+                break;
+            case '\n':
+                out += "\\n";
+                break;
+            case '\r':
+                out += "\\r";
+                break;
+            case '\t':
+                out += "\\t";
+                break;
+            default:
+                out += c;
+        }
+    }
+
+    return out;
+}
+
+bool validate_order(const std::vector<Entry>& entries, std::string_view name) {
+    for (std::size_t i{ 1 }; i < entries.size(); ++i) {
+        const auto& prev = entries[i - 1];
+        const auto& curr = entries[i];
+
+        if (curr.surah < prev.surah ||
+            (curr.surah == prev.surah && curr.ayah <= prev.ayah)) {
+            std::cerr << "error: " << name << " order malformed: " << curr.surah
+                      << ':' << curr.ayah << '\n';
+            return false;
+        }
+    }
+
+    return true;
+}
 
 std::optional<Entry> parse_line(const std::string& line, int line_number) {
     if (line.empty() || line[0] == '#') {
@@ -81,30 +124,45 @@ std::vector<Entry> read_input(const std::string& path) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc != 3) {
-        std::cerr << "usage: " << argv[0] << " <input.txt> <output-dir>\n";
+    if (argc != 4) {
+        std::cerr << "usage: " << argv[0]
+                  << " <input.txt> <translation.txt> <output-dir>\n";
         return 1;
     }
 
     const std::string input_path{ argv[1] };
-    const std::string output_dir{ argv[2] };
+    const std::string translation_path{ argv[2] };
+    const std::filesystem::path output_dir{ argv[3] };
 
     const auto entries = read_input(input_path);
+    const auto translations = read_input(translation_path);
 
-    for (std::size_t i{ 1 }; i < entries.size(); ++i) {
-        const auto& prev = entries[i - 1];
-        const auto& curr = entries[i];
+    if (!validate_order(entries, "corpus") ||
+        !validate_order(translations, "translation")) {
+        return 1;
+    }
 
-        if (curr.surah < prev.surah ||
-            (curr.surah == prev.surah && curr.ayah <= prev.ayah)) {
-            std::cerr << "error: corpus order malformed: " << curr.surah << ":"
-                      << curr.ayah << "\n";
+    if (entries.size() != translations.size()) {
+        std::cerr << "error: corpus and translation have different numbers of "
+                     "entries\n";
+        return 1;
+    }
+
+    for (std::size_t i{}; i < entries.size(); ++i) {
+        if (entries[i].surah != translations[i].surah ||
+            entries[i].ayah != translations[i].ayah) {
+            std::cerr << "error: translation mismatch at entry " << i
+                      << ": expected " << entries[i].surah << ':'
+                      << entries[i].ayah << ", got " << translations[i].surah
+                      << ':' << translations[i].ayah << '\n';
             return 1;
         }
     }
 
     std::string normalized_corpus;
+
     std::vector<Offset> offsets;
+    offsets.reserve(entries.size());
 
     for (const auto& e : entries) {
         const auto normalized = safar::normalize_text(e.text);
@@ -112,16 +170,14 @@ int main(int argc, char* argv[]) {
         offsets.push_back({
             normalized_corpus.size(),
             normalized.size(),
-            e.surah,
-            e.ayah,
         });
 
         normalized_corpus += normalized;
         normalized_corpus += ' ';
     }
 
-    const auto header_path = output_dir + "/corpus.hpp";
-    const auto source_path = output_dir + "/corpus.cpp";
+    const auto header_path = output_dir / "corpus.hpp";
+    const auto source_path = output_dir / "corpus.cpp";
 
     std::ofstream header(header_path);
     if (!header.is_open()) {
@@ -138,6 +194,7 @@ int main(int argc, char* argv[]) {
     header << "namespace safar {\n\n";
     header << "struct CorpusEntry {\n";
     header << "    std::string_view text;\n";
+    header << "    std::string_view translation;\n";
     header << "    std::size_t norm_offset;\n";
     header << "    std::size_t norm_length;\n";
     header << "    std::uint16_t surah;\n";
@@ -162,18 +219,19 @@ int main(int argc, char* argv[]) {
     source << "#include <iterator>\n\n";
     source << "namespace {\n\n";
     source << "constexpr char normalized_corpus_data[] = \""
-           << normalized_corpus << "\";\n\n";
+           << escape_cpp(normalized_corpus) << "\";\n\n";
     source << "}  // namespace\n\n";
     source << "namespace safar {\n\n";
     source << "const CorpusEntry corpus[] = {\n";
 
     for (std::size_t i{}; i < entries.size(); ++i) {
         const auto& e = entries[i];
+        const auto& t = translations[i];
         const auto& offset = offsets[i];
 
-        source << "    {\"" << e.text << "\", " << offset.offset << ", "
-               << offset.length << ", " << offset.surah << ", " << offset.ayah
-               << "},\n";
+        source << "    {\"" << escape_cpp(e.text) << "\", \""
+               << escape_cpp(t.text) << "\", " << offset.offset << ", "
+               << offset.length << ", " << e.surah << ", " << e.ayah << "},\n";
     }
 
     source << "};\n\n";
