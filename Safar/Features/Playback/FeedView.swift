@@ -160,6 +160,10 @@ struct FeedView: View {
     }
 
     private func deleteActiveClip(_ clip: RecitationClip) {
+        let currentIndex = clips.firstIndex {
+            $0.id == clip.id
+        }
+
         let wasActive = activeClipID == clip.id
         if wasActive {
             playbackController.stop()
@@ -178,9 +182,17 @@ struct FeedView: View {
             $0.id == clip.id
         }
 
-        if wasActive {
-            DispatchQueue.main.async {
-                activeClipID = clips.first?.id
+        guard wasActive else {
+            return
+        }
+
+        DispatchQueue.main.async {
+            if let currentIndex,
+                currentIndex < clips.count
+            {
+                activeClipID = clips[currentIndex].id
+            } else {
+                activeClipID = clips.last?.id
             }
         }
     }
