@@ -76,6 +76,7 @@ struct FeedView: View {
                             playerController: playbackController,
                             showTime: true
                         )
+                        .padding(.horizontal, 36)
                         .padding(.bottom, 24)
                     }
                     .frame(height: 40)

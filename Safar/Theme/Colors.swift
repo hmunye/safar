@@ -39,8 +39,8 @@ extension Color {
 
 enum Colors {
     static let background = Color(
-        light: "#1B1B1E",
-        dark: "#1B1B1E"
+        light: "#080708",
+        dark: "#080708",
     )
 
     static let foreground = Color(
@@ -49,13 +49,13 @@ enum Colors {
     )
 
     static let secondary = Color(
-        light: "#2B2A27",
-        dark: "#2B2A27"
+        light: "#807A7E",
+        dark: "#807A7E",
     )
 
     static let accent = Color(
-        light: "#5F8C5A",
-        dark: "#5F8C5A",
+        light: "#6AB547",
+        dark: "#6AB547",
     )
 
     static let destructive = Color.red

@@ -128,7 +128,7 @@ struct CardView: View {
 
             Text(translation)
                 .font(.callout)
-                .foregroundStyle(Colors.foreground.opacity(0.7))
+                .foregroundStyle(Colors.secondary)
                 .lineSpacing(3)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
@@ -137,9 +137,9 @@ struct CardView: View {
         .padding(.vertical, 18)
         .frame(maxWidth: 340)
         .glassEffect(
-            .regular.tint(Colors.background.opacity(0.05)),
+            .regular.tint(Colors.background.opacity(0.03)),
             in: RoundedRectangle(
-                cornerRadius: 28,
+                cornerRadius: 32,
                 style: .continuous
             )
         )
@@ -169,33 +169,31 @@ struct CardView: View {
         _ verse: Verse,
         showSurah: Bool
     ) -> some View {
-        VStack(
-            alignment: .trailing,
-            spacing: 0
-        ) {
+        VStack(alignment: .trailing, spacing: 0) {
             Spacer()
 
             if showSurah {
                 Text(
                     Metadata.surahName(verse.surah)
                 )
-                .font(.title)
-                .fontWeight(.semibold)
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .kerning(0.3)
                 .foregroundStyle(
-                    Colors.foreground.opacity(0.9)
+                    Colors.secondary
                 )
                 .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.bottom, 36)
+                .padding(.bottom, 48)
             }
 
-            HStack(spacing: 10) {
+            HStack(spacing: 8) {
                 Spacer()
 
                 Text("\(verse.surah):\(verse.ayah)")
                     .font(.title3)
                     .fontWeight(.medium)
                     .foregroundStyle(
-                        Colors.foreground.opacity(0.6)
+                        Colors.secondary
                     )
 
                 Button {
@@ -217,7 +215,7 @@ struct CardView: View {
                     .foregroundStyle(
                         showTranslation
                             ? Colors.foreground
-                            : Colors.foreground.opacity(0.5)
+                            : Colors.secondary
                     )
                 }
                 .buttonStyle(.plain)
@@ -225,9 +223,11 @@ struct CardView: View {
 
             Text(verse.text)
                 .font(
-                    .system(size: 50)
+                    .system(
+                        size: 50,
+                    )
                 )
-                .lineSpacing(24)
+                .lineSpacing(16)
                 .multilineTextAlignment(.trailing)
                 .minimumScaleFactor(0.75)
                 .padding(.top, 18)
@@ -235,6 +235,6 @@ struct CardView: View {
             Spacer()
         }
         .foregroundStyle(Colors.foreground)
-        .padding(.horizontal, 32)
+        .padding(.horizontal, 28)
     }
 }

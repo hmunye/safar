@@ -35,7 +35,7 @@ struct MiniAudioPlayer: View {
 
                     Text(subtitle)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Colors.secondary)
                         .lineLimit(1)
                 }
 

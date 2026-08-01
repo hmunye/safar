@@ -43,7 +43,7 @@ struct ProgressSheet: View {
             ),
             value: session.state
         )
-        .presentationDetents([.height(270)])
+        .presentationDetents([.height(285)])
         .presentationDragIndicator(.hidden)
     }
 
@@ -80,9 +80,9 @@ struct ProgressSheet: View {
                         .delay(0.2)
                         .repeatForever(autoreverses: false),
                     gradient: Gradient(colors: [
-                        Colors.background.opacity(0.4),
-                        Colors.background,
-                        Colors.background.opacity(0.4),
+                        Colors.secondary.opacity(0.4),
+                        Colors.secondary,
+                        Colors.secondary.opacity(0.4),
                     ]),
                     bandSize: 0.25
                 )
@@ -97,8 +97,8 @@ struct ProgressSheet: View {
                 Text("Cancel")
                     .font(.headline.weight(.semibold))
                     .foregroundStyle(Colors.foreground)
-                    .frame(maxWidth: 300)
-                    .frame(height: 40)
+                    .frame(maxWidth: 220)
+                    .frame(height: 45)
             }
             .buttonStyle(.glassProminent)
             .tint(Colors.destructive)
@@ -119,7 +119,7 @@ struct ProgressSheet: View {
         VStack(alignment: .leading, spacing: 24) {
             HStack(spacing: 8) {
                 Image(systemName: "waveform")
-                    .font(.title2.weight(.semibold))
+                    .font(.title2.weight(.bold))
                     .foregroundStyle(Colors.accent)
                     .frame(width: 40, height: 40)
 
@@ -129,14 +129,14 @@ struct ProgressSheet: View {
                             .system(
                                 .title2,
                                 design: .rounded,
-                                weight: .semibold
+                                weight: .bold
                             )
                         )
                         .foregroundStyle(Colors.foreground)
 
                     Text(session.message)
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Colors.secondary)
                 }
             }
             .padding(.top, 35)
@@ -205,7 +205,7 @@ struct ProgressSheet: View {
         VStack(alignment: .leading, spacing: 32) {
             HStack(spacing: 8) {
                 Image(systemName: "waveform.slash")
-                    .font(.title2.weight(.semibold))
+                    .font(.title2.weight(.bold))
                     .foregroundStyle(Colors.destructive)
                     .frame(width: 40, height: 40)
 
@@ -214,7 +214,7 @@ struct ProgressSheet: View {
                         .system(
                             .title2,
                             design: .rounded,
-                            weight: .semibold
+                            weight: .bold
                         )
                     )
                     .foregroundStyle(Colors.foreground)
@@ -222,7 +222,7 @@ struct ProgressSheet: View {
 
             Text(session.errorMessage)
                 .font(.body)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Colors.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
             Button(role: .close) {

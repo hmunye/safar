@@ -9,9 +9,6 @@ struct RootView: View {
             Colors.background
                 .ignoresSafeArea()
 
-            DotGrid()
-                .ignoresSafeArea()
-
             FeedView(playbackController: playbackController)
 
             if importExpanded {
@@ -50,44 +47,4 @@ struct RootView: View {
             )
         }
     }
-}
-
-private struct DotGrid: View {
-    private let spacing: CGFloat = 26.7
-    private let dotSize: CGFloat = 2
-
-    var body: some View {
-        Canvas { context, size in
-            let columns = Int(size.width / spacing) + 1
-            let rows = Int(size.height / spacing) + 1
-
-            let offsetX = (size.width - CGFloat(columns - 1) * spacing) / 2
-            let offsetY = (size.height - CGFloat(rows - 1) * spacing) / 2
-
-            for column in 0..<columns {
-                for row in 0..<rows {
-                    let x = offsetX + CGFloat(column) * spacing
-                    let y = offsetY + CGFloat(row) * spacing
-
-                    context.fill(
-                        Path(
-                            ellipseIn: CGRect(
-                                x: x,
-                                y: y,
-                                width: dotSize,
-                                height: dotSize
-                            )
-                        ),
-                        with: .color(
-                            Colors.foreground.opacity(0.06)
-                        )
-                    )
-                }
-            }
-        }
-    }
-}
-
-#Preview {
-    RootView()
 }
