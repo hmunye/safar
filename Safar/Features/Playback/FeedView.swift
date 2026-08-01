@@ -64,7 +64,7 @@ struct FeedView: View {
                         UIImpactFeedbackGenerator(style: .medium)
                             .impactOccurred()
 
-                        await refreshFeed()
+                        await refreshFeed(shuffle: true)
                     }
                 }
                 .ignoresSafeArea(.keyboard)

@@ -3,6 +3,8 @@ import SwiftUI
 struct CardView: View {
     @State private var playbackIndicator: String?
     @State private var activeVerseID: UUID?
+    @State private var selectedTranslation: String?
+    @State private var showTranslation = false
 
     let clip: RecitationClip
     let playbackController: PlaybackController
@@ -49,10 +51,26 @@ struct CardView: View {
             }
             .overlay(alignment: .bottom) {
                 pageIndicator
-                    .padding(.bottom, 100)
+                    .padding(.bottom, 95)
+            }
+            .overlay {
+                if showTranslation,
+                    let selectedTranslation
+                {
+                    translationOverlay(
+                        selectedTranslation
+                    )
+                }
             }
             .contentShape(Rectangle())
             .onTapGesture {
+                if showTranslation {
+                    withAnimation(.bouncy) {
+                        showTranslation = false
+                    }
+                    return
+                }
+
                 playbackController.togglePlayback()
 
                 withAnimation(.spring(response: 0.25)) {
@@ -62,9 +80,23 @@ struct CardView: View {
                         : "play.fill"
                 }
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     withAnimation(.easeOut) {
                         playbackIndicator = nil
+                    }
+                }
+            }
+            .onChange(of: activeVerseID) { _, id in
+                guard showTranslation else {
+                    selectedTranslation = nil
+                    return
+                }
+
+                if let verse = orderedVerses.first(where: {
+                    $0.element.id == id
+                }) {
+                    withAnimation(.easeOut(duration: 0.15)) {
+                        selectedTranslation = verse.element.translation
                     }
                 }
             }
@@ -74,6 +106,47 @@ struct CardView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private func translationOverlay(
+        _ translation: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Image(systemName: "quote.bubble.fill")
+                    .font(.title3)
+                    .foregroundStyle(Colors.foreground)
+
+                Text("Translation - Hilali & Khan")
+                    .font(.headline)
+                    .foregroundStyle(Colors.foreground)
+            }
+
+            Divider()
+                .opacity(0.55)
+
+            Text(translation)
+                .font(.callout)
+                .foregroundStyle(Colors.foreground.opacity(0.7))
+                .lineSpacing(3)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 18)
+        .frame(maxWidth: 340)
+        .glassEffect(
+            .regular.tint(Colors.background.opacity(0.05)),
+            in: RoundedRectangle(
+                cornerRadius: 28,
+                style: .continuous
+            )
+        )
+        .transition(
+            .scale(scale: 0.96)
+                .combined(with: .opacity)
+        )
     }
 
     @ViewBuilder
@@ -98,7 +171,7 @@ struct CardView: View {
     ) -> some View {
         VStack(
             alignment: .trailing,
-            spacing: 24
+            spacing: 0
         ) {
             Spacer()
 
@@ -106,28 +179,62 @@ struct CardView: View {
                 Text(
                     Metadata.surahName(verse.surah)
                 )
-                .font(.largeTitle)
-                .fontWeight(.bold)
+                .font(.title)
+                .fontWeight(.semibold)
+                .foregroundStyle(
+                    Colors.foreground.opacity(0.9)
+                )
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .padding(.bottom, 36)
             }
 
-            Text("\(verse.surah):\(verse.ayah)")
-                .font(.title2)
-                .foregroundStyle(.secondary)
+            HStack(spacing: 10) {
+                Spacer()
+
+                Text("\(verse.surah):\(verse.ayah)")
+                    .font(.title3)
+                    .fontWeight(.medium)
+                    .foregroundStyle(
+                        Colors.foreground.opacity(0.6)
+                    )
+
+                Button {
+                    UIImpactFeedbackGenerator(style: .light)
+                        .impactOccurred()
+
+                    selectedTranslation = verse.translation
+
+                    withAnimation(.bouncy) {
+                        showTranslation.toggle()
+                    }
+                } label: {
+                    Image(
+                        systemName: showTranslation
+                            ? "info.circle.fill"
+                            : "info.circle"
+                    )
+                    .font(.title3)
+                    .foregroundStyle(
+                        showTranslation
+                            ? Colors.foreground
+                            : Colors.foreground.opacity(0.5)
+                    )
+                }
+                .buttonStyle(.plain)
+            }
 
             Text(verse.text)
-                .font(.system(size: 42, weight: .regular))
-                .lineSpacing(16)
+                .font(
+                    .system(size: 50)
+                )
+                .lineSpacing(24)
                 .multilineTextAlignment(.trailing)
-
-            Text(verse.translation)
-                .font(.system(size: 22))
-                .foregroundStyle(.secondary)
-                .lineSpacing(10)
-                .multilineTextAlignment(.leading)
+                .minimumScaleFactor(0.75)
+                .padding(.top, 18)
 
             Spacer()
         }
-        .padding(.horizontal, 32)
         .foregroundStyle(Colors.foreground)
+        .padding(.horizontal, 32)
     }
 }
