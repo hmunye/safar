@@ -254,7 +254,7 @@ float calculate_confidence(const safar::CorpusEntry& entry, std::size_t start,
     return coverage * (sim_base + sim_weight * similarity);
 }
 
-constexpr float min_confidence = 0.7f;
+constexpr float min_confidence = 0.5f;
 
 }  // namespace
 
