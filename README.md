@@ -1,4 +1,10 @@
-# safar
+<div align="center">
+
+<img src="https://github.com/user-attachments/assets/6d153671-a62e-443f-a517-da4e0343cc51#gh-light-mode-only" width="270px" alt="safar logo"/>
+<img src="https://github.com/user-attachments/assets/8828f00c-de2f-4fba-b143-0d40c841307a#gh-dark-mode-only"  width="270px" alt="safar logo"/>
+
+[![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/hmunye/safar/blob/main/LICENSE)
+</div>
 
 An iOS application for transcribing Quran recitation clips on-device, with offline
 verse identification and playback through a scrollable feed.
@@ -45,7 +51,7 @@ SERVER_IP = <server-ip>
 SERVER_PORT = <server-port>
 ```
 
-Rebuild and run the app (`⌘R`).
+Rebuild and run the app in Xcode (`⌘R`).
 
 ## Requirements
 
@@ -84,7 +90,7 @@ converted for use with [`ggml-org/whisper.cpp`](https://github.com/ggml-org/whis
 
 ## Build
 
-Build dependencies required by the Xcode project for iOS device and simulator:
+Build the dependencies required by the Xcode project for iOS device and simulator:
 
 ```bash
 cd Sources/SafarCore
@@ -97,7 +103,7 @@ Connect your iOS device and ensure **Developer Mode** is enabled: [Enable Develo
 
 After pairing with Xcode, select your connected device as the **Run Destination**.
 
-Configure signing:
+Configure **Signing**:
 
 - Add your Apple account under **Xcode Settings -> Apple Accounts**
 - In the project settings, open **Signing & Capabilities** and select your Personal Team
