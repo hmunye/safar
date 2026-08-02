@@ -302,8 +302,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Safar/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Safar;
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Safar uses your local network for URL-based recitation imports.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Safar uses your photo library to import videos.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Safar uses your local network to import recitation clips from URLs.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Safar uses your photo library to import recitation clips.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -351,8 +351,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Safar/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Safar;
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Safar uses your local network for URL-based recitation imports.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Safar uses your photo library to import videos.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Safar uses your local network to import recitation clips from URLs.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Safar uses your photo library to import recitation clips.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

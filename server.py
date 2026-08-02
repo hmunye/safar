@@ -48,6 +48,7 @@ class AudioHandler(BaseHTTPRequestHandler):
                 )
 
                 if res.returncode != 0:
+                    print(res.stderr)
                     self.send_error(500)
                     return
 
