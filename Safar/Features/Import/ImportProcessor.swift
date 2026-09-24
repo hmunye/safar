@@ -205,8 +205,6 @@ final class ImportProcessor {
 
             try data.write(to: url)
             return url
-        case .url(_):
-            throw ImportProcessorError.videoLoadFailed
         }
     }
 }
