@@ -9,10 +9,7 @@ struct ImportView: View {
     @State private var importTask: Task<Void, Never>?
 
     @State private var selectedItem: PhotosPickerItem?
-    @State private var inputURL = ""
-
     @State private var showPhotosPicker = false
-    @State private var showURLAlert = false
 
     @State private var showImportSheet = false
 
@@ -22,16 +19,11 @@ struct ImportView: View {
     private var modelContext
 
     private let playbackController: PlaybackController
-    private let importProcessor: ImportProcessor
+    private let importProcessor = ImportProcessor()
 
     init(expanded: Binding<Bool>, playbackController: PlaybackController) {
         self._expanded = expanded
-
         self.playbackController = playbackController
-        self.importProcessor = ImportProcessor(
-            assetManager: AssetManager(),
-            runtime: RecognitionRuntime()
-        )
     }
 
     var body: some View {
@@ -51,39 +43,6 @@ struct ImportView: View {
             selection: $selectedItem,
             matching: .videos
         )
-        .alert("Import from URL", isPresented: $showURLAlert) {
-            TextField("Enter a URL", text: $inputURL)
-                .submitLabel(.go)
-                .keyboardType(.URL)
-                .disableAutocorrection(true)
-                .foregroundStyle(Colors.foreground)
-                .textInputAutocapitalization(.never)
-
-            Button("Import", role: .confirm) {
-                UIImpactFeedbackGenerator(style: .light)
-                    .impactOccurred()
-
-                guard let url = URL(string: inputURL) else {
-                    return
-                }
-
-                inputURL.removeAll()
-                startImport(.url(url))
-            }
-            .disabled(
-                URL(string: inputURL)?.scheme != "https"
-                    || URL(string: inputURL)?.host == nil
-            )
-            .foregroundStyle(Colors.foreground)
-
-            Button("Cancel", role: .cancel) {
-                UIImpactFeedbackGenerator(style: .light)
-                    .impactOccurred()
-
-                inputURL.removeAll()
-            }
-            .foregroundStyle(Colors.foreground)
-        }
         .sheet(isPresented: $showImportSheet) {
             ProgressSheet(
                 session: importSession,
@@ -157,16 +116,6 @@ struct ImportView: View {
                 withAnimation(.bouncy) {
                     expanded = false
                 }
-            }
-        case .url:
-            guard Config.isURLImportEnabled else {
-                return
-            }
-
-            showURLAlert = true
-
-            withAnimation(.bouncy) {
-                expanded = false
             }
         }
     }

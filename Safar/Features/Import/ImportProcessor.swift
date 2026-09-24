@@ -5,33 +5,21 @@ import SwiftUI
 
 enum ImportSource {
     case photos
-    case url
 }
 
 enum ImportInput {
     case photosVideo(PhotosPickerItem)
-    case url(URL)
 }
 
 final class ImportProcessor {
-    private let assetManager: AssetManager
-    private let runtime: RecognitionRuntime
-
-    init(assetManager: AssetManager, runtime: RecognitionRuntime) {
-        self.assetManager = assetManager
-        self.runtime = runtime
-    }
+    private let assetManager = AssetManager()
+    private let runtime = RecognitionRuntime()
 
     func process(input: ImportInput, session: ImportSession) async throws {
         switch input {
         case .photosVideo(let item):
             try await processPhotosVideo(
                 item: item,
-                session: session
-            )
-        case .url(let url):
-            try await processURL(
-                url: url,
                 session: session
             )
         }
@@ -126,50 +114,6 @@ final class ImportProcessor {
 
         try await processAudio(
             at: savedAudioURL,
-            session: session
-        )
-    }
-
-    private func processURL(
-        url: URL,
-        session: ImportSession
-    ) async throws {
-        try Task.checkCancellation()
-        await session.updateWithDelay(
-            state: .processing,
-            progress: 0.05,
-            message: "Fetching audio..."
-        )
-
-        let audioURL: URL
-
-        do {
-            audioURL = try await assetManager.fetchAudio(
-                from: url
-            )
-        } catch is CancellationError {
-            throw CancellationError()
-        } catch AssetError.serverUnavailable {
-            session.state = .error
-            session.errorMessage =
-                "We couldn't fetch the audio. Is the server running?"
-
-            return
-        } catch AssetError.downloadFailed {
-            session.state = .error
-            session.errorMessage =
-                "We couldn't fetch the audio. Check the source and try again."
-
-            return
-        } catch {
-            session.state = .error
-            session.errorMessage =
-                "We couldn't fetch the audio. Please try again."
-
-            return
-        }
-        try await processAudio(
-            at: audioURL,
             session: session
         )
     }

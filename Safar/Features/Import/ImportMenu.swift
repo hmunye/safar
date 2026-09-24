@@ -14,18 +14,6 @@ struct ImportMenu: View {
                 )
                 .padding([.horizontal, .vertical], 10)
             }
-
-            if Config.isURLImportEnabled {
-                Button(role: .confirm) {
-                    action(.url)
-                } label: {
-                    Label(
-                        "URL",
-                        systemImage: "link"
-                    )
-                    .padding([.horizontal, .vertical], 10)
-                }
-            }
         }
         .foregroundStyle(Colors.foreground)
         .padding()

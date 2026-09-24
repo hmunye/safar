@@ -6,52 +6,18 @@
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/hmunye/safar/blob/main/LICENSE)
 </div>
 
-An iOS application for transcribing Quran recitation clips on-device, with offline
-verse identification and playback through a scrollable feed.
+An iOS application for identifying and understanding Quran recitations you
+encounter. Import a recitation to identify the verses being recited, save it to
+your personal library, then explore its context.
 
 ## Features
 
-- Transcribe Quran recitations on-device and identify the recited verses
-- Import recitation clips from the Photos library or [URL sources](#url-import)
-- Preview imported clips with audio playback and identified chapters and verses
-  before saving
-- Browse saved recitations in a vertical, swipeable feed with background playback
-  and audio repeat
-- Follow along with recitations through right-to-left verse scrolling and per-verse
-  translations
-
-## URL Import
-
-The **optional** URL Import feature requires [`yt-dlp`](https://github.com/yt-dlp/yt-dlp)
-and `ffmpeg`.
-
-After completing the [Setup](#setup) and [Build](#build) steps, install the required
-dependencies:
-
-```bash
-brew install ffmpeg yt-dlp
-```
-
-Start the URL Import server:
-
-```bash
-python3 server.py
-```
-
-Copy the example configuration:
-
-```bash
-cp Safar/Config/Config.xcconfig Safar/Config/Release.xcconfig
-```
-
-Update `Config/Release.xcconfig` with the server address:
-
-```xcconfig
-SERVER_IP = <server-ip>
-SERVER_PORT = <server-port>
-```
-
-Rebuild and run the app in Xcode (`⌘R`).
+- On-device, offline Quran recitation transcription and verse identification
+- Support for live recording and Photos Library import
+- Identified verse(s) preview with audio playback for confirmation before saving
+- Vertical, swipeable feed for browsing your personal library
+- Background audio playback with automatic repeat
+- Synchronized right-to-left Arabic text with per-verse English translations
 
 ## Requirements
 
@@ -81,8 +47,8 @@ git clone https://github.com/hmunye/safar.git
 cd safar
 ```
 
-Prepare the on-device model, [`tarteel-ai/whisper-base-ar-quran`](https://huggingface.co/tarteel-ai/whisper-base-ar-quran),
-converted for use with [`ggml-org/whisper.cpp`](https://github.com/ggml-org/whisper.cpp):
+Prepare the on-device model, [tarteel-ai/whisper-base-ar-quran](https://huggingface.co/tarteel-ai/whisper-base-ar-quran),
+converted for use with [ggml-org/whisper.cpp](https://github.com/ggml-org/whisper.cpp):
 
 ```bash
 ./prepare_model.sh
@@ -90,7 +56,8 @@ converted for use with [`ggml-org/whisper.cpp`](https://github.com/ggml-org/whis
 
 ## Build
 
-Build the dependencies required by the Xcode project for iOS device and simulator:
+Build the native dependencies required by the Xcode project for iOS device and
+simulator:
 
 ```bash
 cd Sources/SafarCore
@@ -99,17 +66,17 @@ cd Sources/SafarCore
 
 Open `Safar.xcodeproj` in Xcode.
 
-Connect your iOS device and ensure **Developer Mode** is enabled: [Enable Developer Mode on iPhone or iPad](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device)
+Connect your iOS device and ensure [Developer Mode](https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device) is enabled.
 
-After pairing with Xcode, select your connected device as the **Run Destination**.
+Once your device is paired with Xcode, select it as the **Run Destination**.
 
-Configure **Signing**:
+To configure **Signing**:
 
-- Add your Apple account under **Xcode Settings -> Apple Accounts**
+- Add your Apple account under **Xcode →  Settings →  Apple Accounts**
 - In the project settings, open **Signing & Capabilities** and select your Personal Team
 - Update the **Bundle Identifier** if required
 
-Build and run the app (`⌘R`).
+Build and run the app (`⌘+R`).
 
 For additional Xcode device setup details, see Apple's documentation:
 [Running your app on simulated or physical devices](https://developer.apple.com/documentation/Xcode/running-your-app-on-simulated-or-physical-devices)
